@@ -14,7 +14,6 @@ export function Navbar() {
         <Link
           href="/"
           className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity"
-          aria-label="MAIIE Systems Home"
         >
           <span className="text-blue-500">⚡</span>
           <span className="text-white">MAIIE</span>
@@ -23,25 +22,14 @@ export function Navbar() {
 
         {/* LINKS (Desktop) */}
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-          <Link
-            href="#proyectos"
-            className="transition-colors hover:text-white"
-          >
-            Proyectos
+          <Link href="#projects" className="transition-colors hover:text-white">
+            Projects
           </Link>
-
-          <Link
-            href="#servicios"
-            className="transition-colors hover:text-white"
-          >
-            Servicios
+          <Link href="#services" className="transition-colors hover:text-white">
+            Services
           </Link>
-
-          <Link
-            href="#filosofia"
-            className="transition-colors hover:text-white"
-          >
-            Filosofía
+          <Link href="#philosophy" className="transition-colors hover:text-white">
+            Philosophy
           </Link>
         </div>
 
@@ -53,7 +41,7 @@ export function Navbar() {
                        hover:bg-blue-500/10 hover:text-blue-300
                        transition-colors cursor-pointer"
           >
-            Zona Clientes
+            Client Zone
           </Button>
         </div>
 
