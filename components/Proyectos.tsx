@@ -12,8 +12,8 @@ export function Proyectos() {
         "Advanced financial calculator for imports. Automates profitability analysis and commercial decision-making logic.",
       tags: ["Python", "Streamlit", "Finance"],
       status: "Deployed",
-      // TUS ENLACES REALES AQUÍ
-      demoUrl: "https://smartroi-project-zvdkq2ndmah7mpd9nbgqol.streamlit.app/",
+      // Enlace validado desde tu instancia de Streamlit Cloud
+      demoUrl: "https://smartroi-project-zvdkq2ndmah7mpd9nbggqol.streamlit.app/",
       repoUrl: "https://github.com/ingenieroedissonia-eng/SmartROI-Project",
     },
     {
@@ -21,9 +21,9 @@ export function Proyectos() {
       description:
         "Multi-agent chatbot for technical mentorship. Integrates specialized roles (Architect, Engineer, Auditor) in a unified ecosystem.",
       tags: ["GenAI", "LLMs", "Multi-Agent"],
-      status: "In Development",
-      demoUrl: "#",
-      repoUrl: "https://github.com/ingenieroedissonia-eng",
+      status: "Deployed", // Actualizado de "In Development" a "Deployed"
+      demoUrl: "https://edimentor-ai-official.vercel.app",
+      repoUrl: "https://github.com/ingenieroedissonia-eng/edimentor-ai-official",
     },
     {
       title: "MAIIE Systems Core",
@@ -31,8 +31,8 @@ export function Proyectos() {
         "Central engineering platform and professional portfolio. Scalable modern architecture built with Next.js 15.",
       tags: ["Next.js 15", "React 19", "Tailwind v4"],
       status: "Online",
-      demoUrl: "#",
-      repoUrl: "#",
+      demoUrl: "#", // Este es tu portafolio actual
+      repoUrl: "https://github.com/ingenieroedissonia-eng/maiie-systems",
     },
   ];
 
@@ -81,24 +81,24 @@ export function Proyectos() {
               </CardContent>
               <CardFooter className="flex gap-3 pt-2">
                 
-                {/* BOTÓN 1: LIVE DEMO (Prioridad Alta) */}
+                {/* BOTÓN 1: LIVE DEMO (Apertura en nueva pestaña) */}
                 <Button 
                   asChild 
                   className="flex-1 bg-white text-black hover:bg-gray-200 transition-colors font-semibold"
                 >
-                  <Link href={project.demoUrl} target="_blank">
+                  <Link href={project.demoUrl} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Live Demo
                   </Link>
                 </Button>
 
-                {/* BOTÓN 2: CÓDIGO (Secundario) */}
+                {/* BOTÓN 2: CÓDIGO (Repositorio GitHub) */}
                 <Button 
                   asChild 
                   variant="outline"
                   className="bg-transparent border-zinc-700 text-gray-300 hover:bg-zinc-800 hover:text-white"
                 >
-                  <Link href={project.repoUrl} target="_blank">
+                  <Link href={project.repoUrl} target="_blank" rel="noopener noreferrer">
                     <Github className="h-4 w-4" />
                   </Link>
                 </Button>
