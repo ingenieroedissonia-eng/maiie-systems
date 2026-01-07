@@ -30,7 +30,7 @@ export function Proyectos() {
       tags: ["Vectorized Python", "Streamlit Cloud", "Financial Logic"],
       status: "Production",
       demoUrl:
-        "https://smartroi-project-zvdkq2ndmah7mpd9nbggqol.streamlit.app/",
+        "https://smartroi-project-zvdkq2ndmah7mpd9nbgqol.streamlit.app/",
       repoUrl: "https://github.com/ingenieroedissonia-eng/SmartROI-Project",
       icon: <TrendingUp className="h-5 w-5 text-emerald-400" />,
     },
@@ -64,14 +64,13 @@ export function Proyectos() {
       className="w-full bg-black py-24 text-white selection:bg-emerald-500/30"
     >
       <div className="mx-auto max-w-7xl px-6">
-        {/* SECTION HEADER — BUSINESS LANGUAGE */}
+        {/* SECTION HEADER */}
         <div className="mb-16 text-center space-y-4">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
             Portfolio of{" "}
             <span className="text-blue-500">Business Cases</span>
           </h2>
 
-          {/* 🔒 COPY CORREGIDO: SIN CLAIM DE SENIORITY */}
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
             Evidence of structured engineering decisions applied to real-world
             problems of latency, scalability, and operational risk.
