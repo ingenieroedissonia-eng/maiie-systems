@@ -1,47 +1,64 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Terminal } from "lucide-react";
 
+/**
+ * NAVBAR — MAIIE SYSTEMS
+ * Global Navigation · Auditable Decision Engineering
+ */
 export function Navbar() {
   return (
     <nav
       className="fixed top-0 z-50 w-full border-b border-white/10
-                 bg-black/50 backdrop-blur-md"
+                 bg-black/80 backdrop-blur-md supports-[backdrop-filter]:bg-black/50"
       aria-label="Main Navigation"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         
-        {/* LOGO / BRAND */}
+        {/* BRAND / SYSTEM IDENTITY */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 text-xl font-bold tracking-tight
+                     transition-opacity hover:opacity-80"
         >
-          <span className="text-blue-500">⚡</span>
+          <Terminal className="h-6 w-6 text-blue-500" />
           <span className="text-white">MAIIE</span>
           <span className="text-gray-500">SYSTEMS</span>
         </Link>
 
-        {/* LINKS (Desktop) */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-          <Link href="#projects" className="transition-colors hover:text-white">
-            Projects
+        {/* NAVIGATION LINKS (DESKTOP) */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+          <Link
+            href="#proyectos"
+            className="transition-colors hover:text-white"
+          >
+            Business Cases
           </Link>
-          <Link href="#services" className="transition-colors hover:text-white">
-            Services
+
+          <Link
+            href="#metodologia"
+            className="transition-colors hover:text-white"
+          >
+            Architecture
           </Link>
-          <Link href="#philosophy" className="transition-colors hover:text-white">
-            Philosophy
+
+          <Link
+            href="#filosofia"
+            className="transition-colors hover:text-white"
+          >
+            System Core
           </Link>
         </div>
 
-        {/* CTA BUTTON */}
+        {/* PRIMARY CTA */}
         <div className="flex items-center">
           <Button
             variant="outline"
-            className="border-blue-500/50 text-blue-400
-                       hover:bg-blue-500/10 hover:text-blue-300
-                       transition-colors cursor-pointer"
+            className="border-blue-500/30 font-mono text-xs text-blue-400
+                       transition-all hover:border-blue-400 hover:bg-blue-500/10
+                       hover:text-blue-300"
           >
-            Client Zone
+            Initiate Protocol
           </Button>
         </div>
 

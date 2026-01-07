@@ -1,26 +1,88 @@
+import { Navbar } from "@/components/Navbar";
 import { Proyectos } from "@/components/Proyectos";
+import { Architecture } from "@/components/Architecture";
+import { SystemCore } from "@/components/SystemCore";
+import Link from "next/link";
 
+/**
+ * HOME — MAIIE SYSTEMS
+ * Auditable Decision Engineering
+ * Author: Edisson A.G.C.
+ */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white">
-      {/* HERO SECTION */}
-      <section className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <h1 className="mb-6 text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-          MAIIE SYSTEMS
-        </h1>
+    <main className="min-h-screen bg-black pt-16 text-white selection:bg-blue-500/30">
+      
+      {/* 1. GLOBAL NAVIGATION */}
+      <Navbar />
 
-        <p className="mb-10 max-w-2xl text-xl text-gray-400">
-          Intelligent Architecture & Engineering Applied to Commerce
-        </p>
+      {/* 2. HERO — STRATEGIC POSITIONING */}
+      <section className="relative flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center px-6 text-center overflow-hidden">
 
-        <div className="flex items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-6 py-2 text-sm font-medium text-green-400">
-          <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-          System Status: ONLINE
+        
+        {/* Technical background */}
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black" />
+
+        <div className="max-w-4xl space-y-8">
+          
+          {/* System identity */}
+          <header className="space-y-2">
+            <p className="font-mono text-sm uppercase tracking-widest text-blue-400">
+              M.A.I.I.E. System · Active
+            </p>
+
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-emerald-400 leading-tight">
+              Auditable Decision Engineering
+            </h1>
+          </header>
+
+          {/* Value proposition */}
+          <p className="mx-auto max-w-2xl text-xl md:text-2xl text-gray-400 leading-relaxed">
+            I design AI systems that transform operational uncertainty into{" "}
+            <span className="text-white font-medium">
+              measurable business assets
+            </span>{" "}
+            through architecture, governance, and multi-agent orchestration.
+          </p>
+
+          {/* Authority pillars */}
+          <div className="flex flex-wrap justify-center gap-3 pt-4">
+            <span className="rounded-full border border-blue-500/30 bg-blue-500/5 px-4 py-1.5 text-xs font-semibold text-blue-400 backdrop-blur-sm">
+              🛡️ Multi-Model Governance
+            </span>
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/5 px-4 py-1.5 text-xs font-semibold text-emerald-400 backdrop-blur-sm">
+              📈 ROI-Driven Decisions
+            </span>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+            <Link
+              href="#proyectos"
+              className="rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95"
+            >
+              View Business Cases
+            </Link>
+
+            <Link
+              href="#metodologia"
+              className="rounded-xl border border-gray-800 px-8 py-4 font-bold text-gray-400 transition-colors hover:bg-gray-900 hover:text-white"
+            >
+              Explore Architecture
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* PROJECTS SECTION */}
+      {/* 3. BUSINESS CASES */}
       <Proyectos />
+
+      {/* 4. ARCHITECTURE */}
+      <Architecture />
+
+      {/* 5. SYSTEM CORE */}
+      <SystemCore />
+
     </main>
   );
 }
