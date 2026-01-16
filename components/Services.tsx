@@ -1,24 +1,29 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, LineChart, Code2 } from "lucide-react";
 
+/**
+ * STRATEGIC CAPABILITIES — MAIIE SYSTEMS
+ * What we are able to design, build, and operate.
+ * Capabilities, not generic services.
+ */
 export function Services() {
-  const services = [
+  const capabilities = [
     {
       title: "AI Engineering & Intelligent Agents",
       description:
-        "Design and deployment of autonomous agents, RAG systems (Retrieval-Augmented Generation), and custom LLM solutions using Vertex AI and OpenAI to solve real business problems.",
+        "Design and implementation of autonomous agents, Retrieval-Augmented Generation (RAG) systems, and custom LLM-based solutions. Focused on traceability, governance, and real business decision support.",
       icon: <Brain className="mb-4 h-10 w-10 text-blue-500" />,
     },
     {
-      title: "Commercial Intelligence & Automation",
+      title: "Commercial Intelligence & Decision Automation",
       description:
-        "Advanced data analysis and financial automation (SmartROI), transforming raw commercial data into actionable insights for strategic decision-making.",
+        "Architecture of financial and commercial intelligence systems (e.g., SmartROI) that transform raw operational data into deterministic, auditable decision outputs.",
       icon: <LineChart className="mb-4 h-10 w-10 text-purple-500" />,
     },
     {
-      title: "Scalable Full-Stack Architecture",
+      title: "Scalable System Architecture",
       description:
-        "Robust and secure web application development using the Next.js ecosystem (React, Tailwind, TypeScript), focused on performance, scalability, and long-term maintainability.",
+        "Design of robust, secure, and scalable full-stack systems using the Next.js ecosystem. Emphasis on performance, long-term maintainability, and production-grade reliability.",
       icon: <Code2 className="mb-4 h-10 w-10 text-green-500" />,
     },
   ];
@@ -34,20 +39,21 @@ export function Services() {
         </h2>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {services.map((service) => (
+          {capabilities.map((capability) => (
             <Card
-              key={service.title}
-              className="group bg-black/50 border-zinc-800 text-white transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/40 hover:bg-zinc-900/80"
+              key={capability.title}
+              className="group border-zinc-800 bg-black/50 text-white transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/40 hover:bg-zinc-900/80"
             >
               <CardHeader>
-                {service.icon}
+                {capability.icon}
                 <CardTitle className="text-xl font-bold">
-                  {service.title}
+                  {capability.title}
                 </CardTitle>
               </CardHeader>
+
               <CardContent>
                 <p className="leading-relaxed text-gray-400">
-                  {service.description}
+                  {capability.description}
                 </p>
               </CardContent>
             </Card>
