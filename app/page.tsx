@@ -1,8 +1,11 @@
+import Link from "next/link";
+
 import { Navbar } from "@/components/Navbar";
 import { Proyectos } from "@/components/Proyectos";
 import { Architecture } from "@/components/Architecture";
 import { SystemCore } from "@/components/SystemCore";
-import Link from "next/link";
+import { Framework } from "@/components/Framework";
+import { Roadmap } from "@/components/Roadmap";
 
 /**
  * HOME — MAIIE SYSTEMS
@@ -18,7 +21,6 @@ export default function Home() {
 
       {/* 2. HERO — STRATEGIC POSITIONING */}
       <section className="relative flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center px-6 text-center overflow-hidden">
-
         
         {/* Technical background */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black" />
@@ -82,6 +84,12 @@ export default function Home() {
 
       {/* 5. SYSTEM CORE */}
       <SystemCore />
+
+      {/* 6. MAIIE FRAMEWORK */}
+      <Framework />
+
+      {/* 7. ROADMAP */}
+      <Roadmap />
 
     </main>
   );
