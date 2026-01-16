@@ -20,7 +20,7 @@ export default function Home() {
       <Navbar />
 
       {/* 2. HERO — STRATEGIC POSITIONING */}
-      <section className="relative flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center px-6 text-center overflow-hidden">
+      <section className="relative flex min-h-[calc(100dvh-4rem)] w-full items-center justify-center px-6 pt-12 md:pt-0 text-center overflow-hidden">
         
         {/* Technical background */}
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black" />
@@ -33,13 +33,13 @@ export default function Home() {
               M.A.I.I.E. System · Active
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-emerald-400 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-emerald-400 leading-tight">
               Auditable Decision Engineering
             </h1>
           </header>
 
           {/* Value proposition */}
-          <p className="mx-auto max-w-2xl text-xl md:text-2xl text-gray-400 leading-relaxed">
+          <p className="mx-auto max-w-2xl text-lg sm:text-xl md:text-2xl text-gray-400 leading-relaxed">
             I design AI systems that transform operational uncertainty into{" "}
             <span className="text-white font-medium">
               measurable business assets
@@ -61,14 +61,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
             <Link
               href="#proyectos"
-              className="rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95"
+              className="w-full sm:w-auto rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95 text-center"
             >
               View Business Cases
             </Link>
 
             <Link
               href="#metodologia"
-              className="rounded-xl border border-gray-800 px-8 py-4 font-bold text-gray-400 transition-colors hover:bg-gray-900 hover:text-white"
+              className="w-full sm:w-auto rounded-xl border border-gray-800 px-8 py-4 font-bold text-gray-400 transition-colors hover:bg-gray-900 hover:text-white text-center"
             >
               Explore Architecture
             </Link>
