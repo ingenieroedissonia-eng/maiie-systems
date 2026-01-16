@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Proyectos } from "@/components/Proyectos";
 import { Architecture } from "@/components/Architecture";
-import { SystemCore } from "@/components/SystemCore";
 import { Framework } from "@/components/Framework";
+import { SystemCore } from "@/components/SystemCore";
 import { Roadmap } from "@/components/Roadmap";
 
 /**
@@ -82,11 +82,11 @@ export default function Home() {
       {/* 4. ARCHITECTURE */}
       <Architecture />
 
-      {/* 5. SYSTEM CORE */}
-      <SystemCore />
-
-      {/* 6. MAIIE FRAMEWORK */}
+      {/* 5. MAIIE FRAMEWORK */}
       <Framework />
+
+      {/* 6. SYSTEM CORE */}
+      <SystemCore />
 
       {/* 7. ROADMAP */}
       <Roadmap />
