@@ -16,17 +16,18 @@ import {
   Cpu,
 } from "lucide-react";
 
+/**
+ * PROJECTS — MAIIE SYSTEMS
+ * Business Case Portfolio
+ * Structure: Business Problem → Architectural Solution → Measurable Outcome
+ */
 export function Proyectos() {
-  /**
-   * BUSINESS ASSET MATRIX
-   * Structure: Business Problem → Architectural Solution → Measurable Outcome
-   */
   const projects = [
     {
       title: "SmartROI v2.0",
       category: "Fintech Decision Engine",
       description:
-        "Transforms manual financial analysis (≈45 minutes per iteration) into deterministic projections in under 0.5 seconds. A decision engine that eliminates human error in ROI, compound interest, and import viability calculations.",
+        "Transforms manual financial analysis (≈45 minutes per iteration) into deterministic projections in under 0.5 seconds. Eliminates human error in ROI, compound interest, and import viability calculations.",
       tags: ["Vectorized Python", "Streamlit Cloud", "Financial Logic"],
       status: "Production",
       demoUrl:
@@ -38,7 +39,7 @@ export function Proyectos() {
       title: "EdiMentor AI",
       category: "Enterprise RAG Audit System",
       description:
-        "Technical decision-auditing system designed to mitigate technical debt through multi-agent orchestration. Integrates specialized roles (Architect, Auditor, Engineer) to reduce code review cycles by ~40% with full traceability.",
+        "Decision-auditing system designed to mitigate technical debt through multi-agent orchestration. Integrates specialized roles (Architect, Auditor, Engineer) to reduce review cycles by ~40% with full traceability.",
       tags: ["Vertex AI", "RAG Architecture", "Multi-Agent Systems"],
       status: "Deployed",
       demoUrl: "https://edimentor-ai-official.vercel.app",
@@ -49,7 +50,7 @@ export function Proyectos() {
       title: "MAIIE Systems Core",
       category: "Operational Architecture Backbone",
       description:
-        "Central engineering platform designed for scalability and authority. Implements edge-first optimization and hybrid rendering to guarantee sub-100ms load times, serving as the conversion and credibility hub of the ecosystem.",
+        "Central engineering platform serving as the backbone of the MAIIE ecosystem. Implements edge-first optimization and hybrid rendering to guarantee sub-100ms load times and long-term scalability.",
       tags: ["Next.js 15", "React 19 RC", "Tailwind CSS v4"],
       status: "Online",
       demoUrl: "#",
@@ -65,15 +66,15 @@ export function Proyectos() {
     >
       <div className="mx-auto max-w-7xl px-6">
         {/* SECTION HEADER */}
-        <div className="mb-16 text-center space-y-4">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+        <div className="mb-16 space-y-4 text-center">
+          <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
             Portfolio of{" "}
             <span className="text-blue-500">Business Cases</span>
           </h2>
 
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
-            Evidence of structured engineering decisions applied to real-world
-            problems of latency, scalability, and operational risk.
+            Evidence of architecture-driven engineering decisions applied to
+            real-world problems involving latency, scalability, and operational risk.
           </p>
         </div>
 
@@ -95,7 +96,7 @@ export function Proyectos() {
                         : "border-yellow-500 text-yellow-400"
                     }`}
                   >
-                    <span className="mr-2 h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                    <span className="mr-2 h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
                     {project.status}
                   </Badge>
                   {project.icon}
@@ -116,6 +117,7 @@ export function Proyectos() {
                 <p className="mb-6 text-sm leading-relaxed text-gray-400">
                   {project.description}
                 </p>
+
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <Badge
