@@ -1,51 +1,71 @@
 import { ShieldCheck, Workflow, Scale } from "lucide-react";
 
+/**
+ * SYSTEM CORE — MAIIE SYSTEMS
+ * Philosophical & Architectural Principles
+ * Architecture-first · Governance-driven · Human-centered
+ */
 export function SystemCore() {
   const principles = [
     {
       icon: <Workflow className="h-6 w-6 text-blue-400" />,
       title: "Architecture > Code",
-      desc: "Priorizing structural integrity and systemic design over raw development. Code is a commodity; architecture is an asset.",
+      desc: "We prioritize structural integrity and systemic design over raw development. Code is a commodity; architecture is a long-term asset.",
     },
     {
       icon: <Scale className="h-6 w-6 text-emerald-400" />,
       title: "Human-in-the-loop",
-      desc: "AI as an accelerator, not a black box. Our systems ensure human oversight in critical commercial decision points.",
+      desc: "AI is an accelerator, not a black box. Every critical commercial decision preserves human oversight and accountability.",
     },
     {
       icon: <ShieldCheck className="h-6 w-6 text-purple-400" />,
       title: "Auditability First",
-      desc: "Every automated outcome must be traceable and justifiable. We solve for trust and operational governance.",
+      desc: "Every automated outcome must be traceable, explainable, and justifiable. We design systems that optimize for trust and operational governance.",
     },
   ];
 
   return (
-    <section id="filosofia" className="w-full bg-black py-24 text-white border-t border-white/5">
+    <section
+      id="filosofia"
+      className="w-full border-t border-white/5 bg-black py-24 text-white"
+    >
       <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col lg:flex-row gap-16 items-center">
-          
-          {/* NARRATIVA DE FILOSOFÍA */}
-          <div className="lg:w-1/2 space-y-6">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+        <div className="flex flex-col items-center gap-16 lg:flex-row">
+
+          {/* PHILOSOPHY NARRATIVE */}
+          <div className="space-y-6 lg:w-1/2">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
               The <span className="text-blue-500">M.A.I.I.E.</span> Philosophy
             </h2>
-            <p className="text-gray-400 text-lg leading-relaxed">
-              Beyond simple AI tools, we build <strong>Decision Ecosystems</strong>. Our methodology is rooted in the belief that intelligence without governance is a liability. 
+
+            <p className="text-lg leading-relaxed text-gray-400">
+              Beyond isolated AI tools, we design <strong>Decision Ecosystems</strong>.
+              Our methodology assumes that intelligence without governance is not innovation,
+              but operational risk.
             </p>
-            <div className="h-1 w-20 bg-blue-600 rounded-full" />
+
+            <div className="h-1 w-20 rounded-full bg-blue-600" />
           </div>
 
-          {/* TARJETAS DE PRINCIPIOS */}
-          <div className="lg:w-1/2 grid gap-4">
-            {principles.map((p, i) => (
-              <div key={i} className="group p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-blue-500/20 transition-all">
+          {/* PRINCIPLES CARDS */}
+          <div className="grid gap-4 lg:w-1/2">
+            {principles.map((principle, index) => (
+              <div
+                key={index}
+                className="group rounded-2xl border border-white/5 bg-zinc-900/30 p-6 transition-all hover:border-blue-500/20"
+              >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg bg-zinc-800/50 group-hover:bg-blue-500/10 transition-colors">
-                    {p.icon}
+                  <div className="rounded-lg bg-zinc-800/50 p-3 transition-colors group-hover:bg-blue-500/10">
+                    {principle.icon}
                   </div>
+
                   <div>
-                    <h3 className="font-bold text-white mb-1">{p.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{p.desc}</p>
+                    <h3 className="mb-1 font-bold text-white">
+                      {principle.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-gray-500">
+                      {principle.desc}
+                    </p>
                   </div>
                 </div>
               </div>
