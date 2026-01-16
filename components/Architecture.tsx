@@ -1,27 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Database, BrainCircuit, ShieldAlert, Zap } from "lucide-react";
 
+/**
+ * ARCHITECTURE — MAIIE SYSTEMS
+ * End-to-end decision architecture
+ * Data → Intelligence → Governance → Action
+ */
 export function Architecture() {
   const steps = [
     {
       icon: <Database className="h-8 w-8 text-blue-400" />,
       title: "1. Data Ingestion",
-      desc: "Raw data extraction from unstructured sources such as PDFs, spreadsheets, and APIs. Normalization pipelines designed for Fintech and Logistics environments.",
+      desc: "Structured and unstructured data ingestion from sources such as PDFs, spreadsheets, and APIs. Normalization pipelines designed for high-variance commercial environments (e.g., Fintech, Logistics).",
     },
     {
       icon: <BrainCircuit className="h-8 w-8 text-purple-400" />,
       title: "2. Neural Processing",
-      desc: "Retrieval-Augmented Generation (RAG) architecture. Context grounding through Vector Databases to ensure responses are anchored in organizational knowledge.",
+      desc: "Retrieval-Augmented Generation (RAG) architecture with vector-based context grounding. Ensures every inference is anchored in validated organizational knowledge.",
     },
     {
       icon: <ShieldAlert className="h-8 w-8 text-emerald-400" />,
       title: "3. Governance Layer",
-      desc: "Dedicated audit layer that validates logical consistency, mathematical accuracy, and compliance before any result is released.",
+      desc: "Dedicated validation layer enforcing logical consistency, mathematical correctness, and policy compliance before any output is approved.",
     },
     {
       icon: <Zap className="h-8 w-8 text-yellow-400" />,
       title: "4. Actionable Output",
-      desc: "Deterministic outputs delivered as structured reports or JSON artifacts. Zero tolerance for hallucinations in critical business decisions.",
+      desc: "Deterministic, auditable outputs delivered as structured reports or machine-consumable artifacts (JSON). Zero tolerance for hallucinations in critical business decisions.",
     },
   ];
 
@@ -36,12 +41,12 @@ export function Architecture() {
             The <span className="text-blue-500">M.A.I.I.E.</span> Architecture
           </h2>
           <p className="mt-4 text-lg text-gray-400">
-            How raw information is transformed into auditable business assets.
+            How raw information is transformed into auditable decision-ready business assets.
           </p>
         </div>
 
         <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div className="absolute left-0 top-12 hidden h-0.5 w-full bg-gradient-to-r from-blue-500/0 via-blue-500/20 to-blue-500/0 lg:block -z-10" />
+          <div className="absolute left-0 top-12 -z-10 hidden h-0.5 w-full bg-gradient-to-r from-blue-500/0 via-blue-500/20 to-blue-500/0 lg:block" />
 
           {steps.map((step, index) => (
             <Card
