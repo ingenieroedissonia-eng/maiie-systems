@@ -8,16 +8,20 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       style={{
         position: "fixed",
-        bottom: "24px",
-        right: "24px",
+        bottom: "16px",
+        right: "16px",
+        left: "16px", // 👈 permite buen comportamiento en móvil
         backgroundColor: "#25D366",
         color: "#ffffff",
-        padding: "14px 18px",
+        padding: "16px 20px",
         borderRadius: "999px",
         fontWeight: 600,
         textDecoration: "none",
         boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
         zIndex: 9999,
+        textAlign: "center",
+        maxWidth: "480px", // 👈 se ve elegante en desktop
+        marginLeft: "auto",
       }}
     >
       💬 Talk to an AI Systems Architect
