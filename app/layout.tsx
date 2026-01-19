@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+// ✅ IMPORTAMOS EL BOTÓN DE WHATSAPP
+import WhatsAppButton from "../componentes/WhatsAppButton";
+
 /**
  * ROOT LAYOUT — MAIIE SYSTEMS
  * Global system shell and identity layer
@@ -34,6 +37,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+
+        {/* ✅ BOTÓN FLOTANTE GLOBAL */}
+        <WhatsAppButton />
       </body>
     </html>
   );
