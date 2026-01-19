@@ -31,7 +31,10 @@ export function Navbar() {
           className="flex items-center gap-2 text-xl font-bold text-white"
         >
           <Terminal className="h-6 w-6 text-blue-500" />
-          MAIIE <span className="text-gray-500">SYSTEMS</span>
+          <span translate="no">MAIIE</span>{" "}
+          <span className="text-gray-500" translate="no">
+            SYSTEMS
+          </span>
         </Link>
 
         {/* DESKTOP NAV */}

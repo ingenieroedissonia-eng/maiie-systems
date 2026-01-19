@@ -2,13 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// ✅ IMPORTAMOS EL BOTÓN DE WHATSAPP
-import WhatsAppButton from "../componentes/WhatsAppButton";
-
-/**
- * ROOT LAYOUT — MAIIE SYSTEMS
- * Global system shell and identity layer
- */
+import WhatsAppButton from "../components/WhatsAppButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,17 +22,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google" content="notranslate" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-
-        {/* ✅ BOTÓN FLOTANTE GLOBAL */}
         <WhatsAppButton />
       </body>
     </html>
