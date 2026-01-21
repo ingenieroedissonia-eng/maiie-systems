@@ -1,4 +1,14 @@
+import { Button } from "@/components/ui/button";
+
+/**
+ * ROADMAP — MAIIE SYSTEMS
+ * Controlled system evolution
+ */
 export function Roadmap() {
+  // WhatsApp CTA — AI Blueprint Express
+  const whatsappLink =
+    "https://wa.me/573212053974?text=Hello%2C%20I%E2%80%99ve%20reviewed%20your%20system%20roadmap%20and%20I%E2%80%99d%20like%20to%20start%20with%20Phase%201%20through%20the%20AI%20Blueprint%20Express.";
+
   return (
     <section
       id="roadmap"
@@ -34,6 +44,15 @@ export function Roadmap() {
               Selective expansion, automation hardening, and governance maturity.
             </li>
           </ul>
+
+          {/* FINAL CTA */}
+          <div className="pt-8">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+              <Button className="rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95">
+                Start Phase 1 with AI Blueprint Express
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
     </section>

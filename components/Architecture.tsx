@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Database, BrainCircuit, ShieldAlert, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /**
  * ARCHITECTURE — MAIIE SYSTEMS
@@ -29,6 +30,10 @@ export function Architecture() {
       desc: "Deterministic, auditable outputs delivered as structured reports or machine-consumable artifacts (JSON). Zero tolerance for hallucinations in critical business decisions.",
     },
   ];
+
+  // WhatsApp CTA — AI Blueprint Express
+  const whatsappLink =
+    "https://wa.me/573212053974?text=Hello%2C%20I%E2%80%99ve%20reviewed%20the%20M.A.I.I.E.%20architecture%20and%20I%E2%80%99d%20like%20to%20apply%20it%20to%20my%20business%20through%20the%20AI%20Blueprint%20Express.";
 
   return (
     <section
@@ -69,6 +74,18 @@ export function Architecture() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* SECTION CTA */}
+        <div className="mt-20 text-center">
+          <p className="mb-6 text-lg text-gray-400">
+            This architecture is delivered through a structured engagement.
+          </p>
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+            <Button className="rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95">
+              Apply via AI Blueprint Express
+            </Button>
+          </a>
         </div>
       </div>
     </section>

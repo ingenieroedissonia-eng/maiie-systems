@@ -21,6 +21,10 @@ export function Navbar() {
     { href: "#roadmap", label: "Roadmap" },
   ];
 
+  // WhatsApp CTA — AI Blueprint Express
+  const whatsappLink =
+    "https://wa.me/573212053974?text=Hello%2C%20I%20reviewed%20your%20MAIIE%20Systems%20platform.%20I%E2%80%99m%20interested%20in%20the%20AI%20Blueprint%20Express%20to%20evaluate%20an%20AI%20opportunity%20for%20my%20business.";
+
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -52,16 +56,16 @@ export function Navbar() {
 
         {/* DESKTOP CTA */}
         <div className="hidden md:block">
-          <Link href="#proyectos">
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
             <Button
               variant="outline"
               className="border-blue-500/30 font-mono text-xs text-blue-400
                          transition-all hover:border-blue-400 hover:bg-blue-500/10
                          hover:text-blue-300"
             >
-              Initiate Protocol
+              Start AI Blueprint
             </Button>
-          </Link>
+          </a>
         </div>
 
         {/* MOBILE TOGGLE */}
@@ -90,16 +94,21 @@ export function Navbar() {
             ))}
 
             {/* MOBILE CTA */}
-            <Link href="#proyectos" onClick={() => setOpen(false)}>
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+            >
               <Button
                 variant="outline"
                 className="mt-4 w-full border-blue-500/30 font-mono text-xs text-blue-400
                            transition-all hover:border-blue-400 hover:bg-blue-500/10
                            hover:text-blue-300"
               >
-                Initiate Protocol
+                Start AI Blueprint
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { ShieldCheck, Workflow, Scale } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /**
  * SYSTEM CORE — MAIIE SYSTEMS
@@ -23,6 +24,10 @@ export function SystemCore() {
       desc: "Every automated outcome must be traceable, explainable, and justifiable. We design systems that optimize for trust and operational governance.",
     },
   ];
+
+  // WhatsApp CTA — AI Blueprint Express
+  const whatsappLink =
+    "https://wa.me/573212053974?text=Hello%2C%20I%E2%80%99ve%20reviewed%20the%20M.A.I.I.E.%20philosophy%20and%20I%E2%80%99d%20like%20to%20start%20with%20the%20AI%20Blueprint%20Express.";
 
   return (
     <section
@@ -72,6 +77,18 @@ export function SystemCore() {
             ))}
           </div>
 
+        </div>
+
+        {/* SECTION CTA */}
+        <div className="mt-20 text-center">
+          <p className="mb-6 text-lg text-gray-400">
+            This philosophy is applied through a structured, architecture-first engagement.
+          </p>
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+            <Button className="rounded-xl bg-white px-8 py-4 font-bold text-black transition-transform hover:scale-105 active:scale-95">
+              Start with AI Blueprint Express
+            </Button>
+          </a>
         </div>
       </div>
     </section>
