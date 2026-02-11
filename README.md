@@ -1,24 +1,65 @@
 # MAIIE Systems
 
-**MAIIE Systems** (Modelo de Arquitectura e Ingeniería Inteligente de Edisson) es un framework de arquitectura
-diseñado para construir, gobernar y ejecutar sistemas de IA y plataformas de decisión listas para producción.
+**MAIIE Systems (Model of Intelligent Architecture & Engineering by Edisson)** is an architecture-first framework designed to build, govern, and execute AI-powered decision systems ready for real-world production.
 
-## ¿Qué problema resuelve?
-Muchos sistemas de IA fallan en producción por falta de gobernanza, trazabilidad y control de riesgos.
-MAIIE Systems aborda este problema con un enfoque arquitectura-primero y orientado a impacto real de negocio.
+It focuses on **governance, traceability, risk control, and measurable business impact**, not experimentation.
 
-## ¿Para qué sirve?
-- Diseñar sistemas de decisión basados en IA de forma estructurada
-- Definir roles, fases y responsabilidades claras en proyectos de IA
-- Reducir deuda técnica y riesgo operativo
-- Alinear soluciones de IA con objetivos de negocio y ROI medible
+---
 
-## ¿Qué incluye este repositorio?
-- Implementación web del modelo MAIIE (Next.js)
-- Estructura base del framework de arquitectura
-- Despliegue productivo en la nube
+## 🚩 The Problem
 
-## Estado del proyecto
-Activo y desplegado.
+Many AI systems fail in production due to:
 
-🌐 Demo en producción: https://maiie-systems.vercel.app
+- Lack of architectural governance  
+- Poor decision traceability  
+- Uncontrolled technical risk  
+- Misalignment with business objectives  
+
+Most projects focus on models, not on **decision systems**.
+
+---
+
+## 🎯 The Solution
+
+MAIIE Systems introduces a **decision-centric, architecture-first approach** that ensures:
+
+- Clear roles, phases, and responsibilities  
+- Controlled execution and validation  
+- Alignment between AI, operations, and ROI  
+- Long-term architectural stability  
+
+---
+
+## 🧩 What This Repository Contains
+
+- Web implementation of the **MAIIE architectural model** (Next.js)
+- Core structure for decision system governance
+- Production-ready deployment on cloud
+- Foundation for scalable AI and multi-agent systems
+
+---
+
+## ⚙️ Technology Stack
+
+- **Frontend:** Next.js (App Router)
+- **Architecture:** Decision Systems & Governance Model
+- **Cloud:** Production deployment (Vercel)
+- **Design Philosophy:** Architecture-first, audit-ready systems
+
+---
+
+## 🚀 Project Status
+
+✅ Active  
+✅ Deployed in production  
+
+🌐 **Live Demo:**  
+https://maiie-systems.vercel.app
+
+---
+
+## 👤 Author
+
+**Edisson Andrés Guavita Castelbanco**  
+AI Systems Engineer & Architecture Specialist  
+Founder of MAIIE Systems
