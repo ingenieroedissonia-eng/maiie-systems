@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MAIIE Systems
 
-## Getting Started
+**MAIIE Systems** (Modelo de Arquitectura e Ingeniería Inteligente de Edisson) es un framework de arquitectura
+diseñado para construir, gobernar y ejecutar sistemas de IA y plataformas de decisión listas para producción.
 
-First, run the development server:
+## ¿Qué problema resuelve?
+Muchos sistemas de IA fallan en producción por falta de gobernanza, trazabilidad y control de riesgos.
+MAIIE Systems aborda este problema con un enfoque arquitectura-primero y orientado a impacto real de negocio.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ¿Para qué sirve?
+- Diseñar sistemas de decisión basados en IA de forma estructurada
+- Definir roles, fases y responsabilidades claras en proyectos de IA
+- Reducir deuda técnica y riesgo operativo
+- Alinear soluciones de IA con objetivos de negocio y ROI medible
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ¿Qué incluye este repositorio?
+- Implementación web del modelo MAIIE (Next.js)
+- Estructura base del framework de arquitectura
+- Despliegue productivo en la nube
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estado del proyecto
+Activo y desplegado.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🌐 Demo en producción: https://maiie-systems.vercel.app
