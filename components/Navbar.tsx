@@ -7,9 +7,10 @@ import { Terminal, Menu, X } from "lucide-react";
 
 /**
  * NAVBAR — MAIIE SYSTEMS
- * Responsive · Honest · Contractor-grade
- * Architecture-first navigation
+ * Responsive · Architecture-first
+ * Stable production version
  */
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
 
@@ -26,16 +27,22 @@ export function Navbar() {
     "https://wa.me/573212053974?text=Hello%2C%20I%20reviewed%20your%20MAIIE%20Systems%20platform.%20I%E2%80%99m%20interested%20in%20the%20AI%20Blueprint%20Express%20to%20evaluate%20an%20AI%20opportunity%20for%20my%20business.";
 
   return (
-    <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
+    <nav
+      className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
         {/* BRAND */}
         <Link
           href="/"
+          prefetch
           className="flex items-center gap-2 text-xl font-bold text-white"
+          aria-label="MAIIE Systems Home"
         >
           <Terminal className="h-6 w-6 text-blue-500" />
-          <span translate="no">MAIIE</span>{" "}
+          <span translate="no">MAIIE</span>
           <span className="text-gray-500" translate="no">
             SYSTEMS
           </span>
@@ -47,6 +54,7 @@ export function Navbar() {
             <Link
               key={l.href}
               href={l.href}
+              prefetch={false}
               className="transition-colors hover:text-white"
             >
               {l.label}
@@ -56,7 +64,12 @@ export function Navbar() {
 
         {/* DESKTOP CTA */}
         <div className="hidden md:block">
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Start AI Blueprint consultation via WhatsApp"
+          >
             <Button
               variant="outline"
               className="border-blue-500/30 font-mono text-xs text-blue-400
@@ -72,9 +85,9 @@ export function Navbar() {
         <button
           className="md:hidden text-white"
           onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
+          aria-label="Toggle navigation menu"
         >
-          {open ? <X /> : <Menu />}
+          {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
@@ -82,10 +95,12 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-white/10 bg-black">
           <div className="flex flex-col gap-4 px-6 py-6 text-sm text-gray-300">
+
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
+                prefetch={false}
                 onClick={() => setOpen(false)}
                 className="transition-colors hover:text-white"
               >
@@ -99,6 +114,7 @@ export function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
+              aria-label="Start AI Blueprint consultation via WhatsApp"
             >
               <Button
                 variant="outline"
@@ -109,6 +125,7 @@ export function Navbar() {
                 Start AI Blueprint
               </Button>
             </a>
+
           </div>
         </div>
       )}
