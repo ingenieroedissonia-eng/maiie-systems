@@ -21,8 +21,21 @@ import {
  * Business Case Portfolio
  * Structure: Business Problem → Architectural Solution → Measurable Outcome
  */
+
+interface Project {
+  title: string;
+  category: string;
+  description: string;
+  tags: string[];
+  status: string;
+  demoUrl: string;
+  repoUrl: string;
+  icon: React.ReactNode;
+  hideDemo?: boolean;
+}
+
 export function Proyectos() {
-  const projects = [
+  const projects: Project[] = [
     {
       title: "SmartROI v2.0",
       category: "Fintech Decision Engine",
@@ -53,9 +66,23 @@ export function Proyectos() {
         "Central engineering platform serving as the backbone of the MAIIE ecosystem. Implements edge-first optimization and hybrid rendering to guarantee sub-100ms load times and long-term scalability.",
       tags: ["Next.js 15", "React 19 RC", "Tailwind CSS v4"],
       status: "Online",
-      demoUrl: "#",
+      demoUrl: "https://maiie-systems.vercel.app",
       repoUrl: "https://github.com/ingenieroedissonia-eng/maiie-systems",
+      hideDemo: true,
       icon: <Cpu className="h-5 w-5 text-purple-400" />,
+    },
+    {
+      title: "Email Processing API",
+      category: "Clean Architecture Backend",
+      description:
+        "Production-ready email processing backend built with FastAPI and Clean Architecture. Handles email ingestion, domain validation, and processing with strict separation between domain, infrastructure, and API layers.",
+      tags: ["FastAPI", "Clean Architecture", "Python 3.11+"],
+      status: "Production",
+      demoUrl:
+        "https://github.com/ingenieroedissonia-eng/email-processing-api",
+      repoUrl:
+        "https://github.com/ingenieroedissonia-eng/email-processing-api",
+      icon: <ShieldCheck className="h-5 w-5 text-emerald-400" />,
     },
   ];
 
@@ -78,11 +105,12 @@ export function Proyectos() {
 
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
             Evidence of architecture-driven engineering decisions applied to
-            real-world problems involving latency, scalability, and operational risk.
+            real-world problems involving latency, scalability, and operational
+            risk.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {projects.map((project) => (
             <Card
               key={project.title}
@@ -135,31 +163,36 @@ export function Proyectos() {
               </CardContent>
 
               <CardFooter className="flex gap-3 border-t border-white/5 pt-4">
-                <Button
-                  asChild
-                  className="flex-1 bg-white font-bold text-black transition-all hover:bg-gray-200"
-                >
-                  <Link
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                {!project.hideDemo && (
+                  <Button
+                    asChild
+                    className="flex-1 bg-white font-bold text-black transition-all hover:bg-gray-200"
                   >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Demo / ROI
-                  </Link>
-                </Button>
+                    <Link
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View Demo / ROI
+                    </Link>
+                  </Button>
+                )}
 
                 <Button
                   asChild
                   variant="outline"
-                  className="border-zinc-700 bg-transparent text-gray-400 transition-all hover:border-white hover:bg-zinc-800 hover:text-white"
+                  className={`${
+                    project.hideDemo ? "flex-1" : ""
+                  } border-zinc-700 bg-transparent text-gray-400 transition-all hover:border-white hover:bg-zinc-800 hover:text-white`}
                 >
                   <Link
                     href={project.repoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Github className="h-5 w-5" />
+                    <Github className={`h-5 w-5 ${project.hideDemo ? "mr-2" : ""}`} />
+                    {project.hideDemo && "View Source"}
                   </Link>
                 </Button>
               </CardFooter>
