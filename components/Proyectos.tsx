@@ -13,7 +13,6 @@ import {
   ExternalLink,
   TrendingUp,
   ShieldCheck,
-  Cpu,
 } from "lucide-react";
 
 /**
@@ -31,7 +30,6 @@ interface Project {
   demoUrl: string;
   repoUrl: string;
   icon: React.ReactNode;
-  hideDemo?: boolean;
 }
 
 export function Proyectos() {
@@ -58,18 +56,6 @@ export function Proyectos() {
       demoUrl: "https://edimentor-ai-official.vercel.app",
       repoUrl: "https://github.com/ingenieroedissonia-eng/edimentor-ai-official",
       icon: <ShieldCheck className="h-5 w-5 text-blue-400" />,
-    },
-    {
-      title: "MAIIE Systems Core",
-      category: "Operational Architecture Backbone",
-      description:
-        "Central engineering platform serving as the backbone of the MAIIE ecosystem. Implements edge-first optimization and hybrid rendering to guarantee sub-100ms load times and long-term scalability.",
-      tags: ["Next.js 15", "React 19 RC", "Tailwind CSS v4"],
-      status: "Online",
-      demoUrl: "https://maiie-systems.vercel.app",
-      repoUrl: "https://github.com/ingenieroedissonia-eng/maiie-systems",
-      hideDemo: true,
-      icon: <Cpu className="h-5 w-5 text-purple-400" />,
     },
     {
       title: "Email Processing API",
@@ -110,7 +96,7 @@ export function Proyectos() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {projects.map((project) => (
             <Card
               key={project.title}
@@ -163,36 +149,31 @@ export function Proyectos() {
               </CardContent>
 
               <CardFooter className="flex gap-3 border-t border-white/5 pt-4">
-                {!project.hideDemo && (
-                  <Button
-                    asChild
-                    className="flex-1 bg-white font-bold text-black transition-all hover:bg-gray-200"
+                <Button
+                  asChild
+                  className="flex-1 bg-white font-bold text-black transition-all hover:bg-gray-200"
+                >
+                  <Link
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Link
-                      href={project.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      View Demo / ROI
-                    </Link>
-                  </Button>
-                )}
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Demo / ROI
+                  </Link>
+                </Button>
 
                 <Button
                   asChild
                   variant="outline"
-                  className={`${
-                    project.hideDemo ? "flex-1" : ""
-                  } border-zinc-700 bg-transparent text-gray-400 transition-all hover:border-white hover:bg-zinc-800 hover:text-white`}
+                  className="border-zinc-700 bg-transparent text-gray-400 transition-all hover:border-white hover:bg-zinc-800 hover:text-white"
                 >
                   <Link
                     href={project.repoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Github className={`h-5 w-5 ${project.hideDemo ? "mr-2" : ""}`} />
-                    {project.hideDemo && "View Source"}
+                    <Github className="h-5 w-5" />
                   </Link>
                 </Button>
               </CardFooter>
