@@ -1,4 +1,4 @@
-import {
+﻿import {
   Card,
   CardContent,
   CardFooter,
@@ -61,18 +61,17 @@ export function Proyectos() {
       title: "Email Processing API",
       category: "Clean Architecture Backend",
       description:
-        "Production-ready email processing backend built with FastAPI and Clean Architecture. Handles email ingestion, domain validation, and processing with strict separation between domain, infrastructure, and API layers.",
-      tags: ["FastAPI", "Clean Architecture", "Python 3.11+"],
+        "Production-ready email processing backend built with FastAPI and Clean Architecture. Handles email ingestion, domain validation, and AI-powered reply generation. Deployed on Google Cloud Run.",
+      tags: ["FastAPI", "Clean Architecture", "Google Cloud Run"],
       status: "Production",
       demoUrl:
-        "https://github.com/ingenieroedissonia-eng/email-processing-api",
+        "https://email-processing-api-247946064488.us-central1.run.app/docs",
       repoUrl:
         "https://github.com/ingenieroedissonia-eng/email-processing-api",
       icon: <ShieldCheck className="h-5 w-5 text-emerald-400" />,
     },
   ];
 
-  // WhatsApp CTA — AI Blueprint Express
   const whatsappLink =
     "https://wa.me/573212053974?text=Hello%2C%20I%20reviewed%20your%20MAIIE%20Systems%20projects.%20I%E2%80%99d%20like%20to%20apply%20this%20architecture%20to%20my%20business%20through%20the%20AI%20Blueprint%20Express.";
 
@@ -82,13 +81,11 @@ export function Proyectos() {
       className="w-full bg-black py-24 text-white selection:bg-emerald-500/30"
     >
       <div className="mx-auto max-w-7xl px-6">
-        {/* SECTION HEADER */}
         <div className="mb-16 space-y-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
             Portfolio of{" "}
             <span className="text-blue-500">Business Cases</span>
           </h2>
-
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
             Evidence of architecture-driven engineering decisions applied to
             real-world problems involving latency, scalability, and operational
@@ -124,7 +121,6 @@ export function Proyectos() {
                   <p className="font-mono text-xs uppercase tracking-wider text-blue-400">
                     {project.category}
                   </p>
-
                   <CardTitle className="text-2xl font-bold text-white transition-colors group-hover:text-blue-400">
                     {project.title}
                   </CardTitle>
@@ -135,7 +131,6 @@ export function Proyectos() {
                 <p className="mb-6 text-sm leading-relaxed text-gray-400">
                   {project.description}
                 </p>
-
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <Badge
@@ -181,7 +176,6 @@ export function Proyectos() {
           ))}
         </div>
 
-        {/* SECTION CTA */}
         <div className="mt-20 text-center">
           <p className="mb-6 text-lg text-gray-400">
             Want to apply this level of architecture to your own business?
