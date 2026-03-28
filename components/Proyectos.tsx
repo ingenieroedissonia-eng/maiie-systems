@@ -1,4 +1,4 @@
-﻿import {
+import {
   Card,
   CardContent,
   CardFooter,
@@ -15,12 +15,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-/**
- * PROJECTS — MAIIE SYSTEMS
- * Business Case Portfolio
- * Structure: Business Problem → Architectural Solution → Measurable Outcome
- */
-
 interface Project {
   title: string;
   category: string;
@@ -35,15 +29,15 @@ interface Project {
 export function Proyectos() {
   const projects: Project[] = [
     {
-      title: "SmartROI v2.0",
-      category: "Fintech Decision Engine",
+      title: "RAG Document API",
+      category: "Semantic Search Backend",
       description:
-        "Transforms manual financial analysis (≈45 minutes per iteration) into deterministic projections in under 0.5 seconds. Eliminates human error in ROI, compound interest, and import viability calculations.",
-      tags: ["Vectorized Python", "Streamlit Cloud", "Financial Logic"],
+        "Production-ready REST API for document management with semantic search. Built with FastAPI and Clean Architecture. Supports document ingestion and semantic query retrieval. Deployed on Google Cloud Run.",
+      tags: ["FastAPI", "Semantic Search", "Google Cloud Run"],
       status: "Production",
       demoUrl:
-        "https://smartroi-project-zvdkq2ndmah7mpd9nbgqol.streamlit.app/",
-      repoUrl: "https://github.com/ingenieroedissonia-eng/SmartROI-Project",
+        "https://rag-document-api-247946064488.us-central1.run.app/docs",
+      repoUrl: "https://github.com/ingenieroedissonia-eng/rag-document-api",
       icon: <TrendingUp className="h-5 w-5 text-emerald-400" />,
     },
     {
