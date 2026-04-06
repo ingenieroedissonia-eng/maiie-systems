@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿content = '''import React, { useState, useEffect } from 'react';
 import { getSubmissions } from '../services/apiService';
 
 const W = 165; const H = 62;
@@ -55,22 +55,6 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
       .catch(() => setNodes([]))
       .finally(() => setLoading(false));
   }, [missionId]);
-
-  useEffect(() => {
-    if (!missionId || nodes.length > 0) return;
-    const retry = setInterval(() => {
-      getSubmissions(missionId)
-        .then(data => {
-          const subs = data.submisiones || [];
-          if (subs.length > 0) {
-            setNodes(buildLayout(subs));
-            clearInterval(retry);
-          }
-        })
-        .catch(() => {});
-    }, 3000);
-    return () => clearInterval(retry);
-  }, [missionId, nodes.length]);
 
   useEffect(() => {
     if (!missionId || nodes.length === 0) return;
@@ -161,4 +145,6 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
     </div>
   );
 };
-export default GraphConsole;
+export default GraphConsole;'''
+open('maiie-web/src/components/GraphConsole.jsx', 'w', encoding='utf-8').write(content)
+print('OK')

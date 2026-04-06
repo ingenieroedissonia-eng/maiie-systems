@@ -146,7 +146,14 @@ def root():
 @app.post("/mission", response_model=MissionResponse)
 def ejecutar_mision(request: MissionRequest):
     mission_id = _uuid.uuid4().hex[:12]
-    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": []})
+    submisiones = []
+    if USAR_PLANNER:
+        try:
+            submisiones_raw = planner_executor.planner.decompose(request.orden)
+            submisiones = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in submisiones_raw]
+        except Exception:
+            submisiones = []
+    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submisiones": submisiones})
 
     def _run():
         try:
@@ -155,13 +162,20 @@ def ejecutar_mision(request: MissionRequest):
                 resultado  = resultados[-1] if resultados else None
             else:
                 resultado = pipeline.ejecutar_mision(sistema, request.orden)
-            _gcs_guardar(mission_id, {"status": "done", "aprobado": resultado.aprobado, "iteracion": resultado.iteracion, "observaciones": resultado.observaciones, "logs": []})
+            _gcs_guardar(mission_id, {"status": "done", "aprobado": resultado.aprobado, "iteracion": resultado.iteracion, "observaciones": resultado.observaciones, "logs": [], "submisiones": submisiones})
         except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
     threading.Thread(target=_run, daemon=True).start()
     return MissionResponse(mission_id=mission_id, status="running", message="Mision iniciada. Consulta GET /mission/{id}/status")
 
+
+@app.get("/mission/{mission_id}/submissions")
+def obtener_submisiones(mission_id: str):
+    data = _gcs_obtener(mission_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Mission no encontrada")
+    return {"mission_id": mission_id, "submisiones": data.get("submisiones", []), "status": data.get("status")}
 
 @app.get("/mission/{mission_id}/status", response_model=MissionStatusResponse)
 def estado_mision(mission_id: str):
