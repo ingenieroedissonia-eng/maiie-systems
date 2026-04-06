@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import Sidebar from './components/Sidebar';
 import GraphConsole from './components/GraphConsole';

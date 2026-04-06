@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 
 const NodeDetailPanel = ({ selectedNode, missionStatus }) => {
   const [tab, setTab] = useState('status');
