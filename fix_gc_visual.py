@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿content = '''import React, { useState, useEffect } from 'react';
 import { getSubmissions } from '../services/apiService';
 
 const W = 200; const H = 70;
@@ -11,7 +11,7 @@ const PAD_Y = 30;
 const buildLayout = (submisiones) => {
   return submisiones.map((sub, i) => ({
     id: sub.id,
-    file: sub.descripcion.length > 40 ? sub.descripcion.slice(0, sub.descripcion.lastIndexOf(' ', 40)) + '...' : sub.descripcion,
+    file: sub.descripcion.length > 35 ? sub.descripcion.slice(0, 35) + '...' : sub.descripcion,
     descripcion: sub.descripcion,
     status: sub.status || 'pending',
     x: (i % COLS) * COL_GAP + PAD_X,
@@ -97,17 +97,16 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
   }, [missionId, nodes.length]);
 
   useEffect(() => {
-    if (!missionId || missionStatus?.status !== 'running') return;
-    const poll = setInterval(() => {
+    if (!missionId || nodes.length === 0) return;
+    if (missionStatus?.status === 'done' || missionStatus?.status === 'running') {
       getSubmissions(missionId)
         .then(data => {
           const subs = data.submisiones || [];
-          if (subs.length > nodes.length) setNodes(buildLayout(subs));
+          if (subs.length > 0) setNodes(buildLayout(subs));
         })
         .catch(() => {});
-    }, 5000);
-    return () => clearInterval(poll);
-  }, [missionId, missionStatus?.status]);
+    }
+  }, [missionStatus?.status]);
 
   if (!missionId) return (
     <div className="graph-area">
@@ -179,4 +178,6 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
     </div>
   );
 };
-export default GraphConsole;
+export default GraphConsole;'''
+open('maiie-web/src/components/GraphConsole.jsx', 'w', encoding='utf-8').write(content)
+print('OK')
