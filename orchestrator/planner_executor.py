@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - Planner Executor
 Modulo: Ejecucion de submisiones con contexto incremental
 Capa: Orchestrator
@@ -124,7 +124,12 @@ class PlannerExecutor:
                     f"Las capas posteriores se implementaran en submisiones siguientes.\n"
                 )
 
-            resultado = self.pipeline.ejecutar_mision(orquestador, orden_enriquecida)
+            try:
+                resultado = self.pipeline.ejecutar_mision(orquestador, orden_enriquecida)
+            except Exception as e:
+                logger.error("Error en submision [%s]: %s — continuando", sub["id"], e, exc_info=True)
+                ids_resueltos.add(sub["id"])
+                continue
             resultados.append(resultado)
             ids_resueltos.add(sub["id"])
 
