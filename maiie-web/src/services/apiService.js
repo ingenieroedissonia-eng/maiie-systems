@@ -47,3 +47,19 @@ export const getMissionStatus = async (missionId) => {
     throw new NetworkError('Network request failed.');
   }
 };
+
+export const getMissions = async () => {
+  try {
+    const response = await fetch('/api/missions', {
+      headers: { 'x-app-token': APP_TOKEN },
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error' }));
+      throw new ApiError(errorData.message || 'API Error: ' + response.statusText, response.status);
+    }
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new NetworkError('Network request failed.');
+  }
+};

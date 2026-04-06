@@ -1,3 +1,106 @@
-import pathlib
-pathlib.Path(chr(39)maiie-web/src/components/Sidebar.jsx chr(39)).write_text('import React, { useState, useEffect } from \'react\';\n\nconst API_URL = \'https://maiie-system-247946064488.us-central1.run.app\';\nconst API_KEY = \'maiie-secret-2026\';\n\nconst Sidebar = ({ onNewMission, missionStatus, onLoadMission }) => {\n  const [historial, setHistorial] = useState([]);\n  const [vista, setVista] = useState(\'panel\');\n\n  const fetchHistorial = async () => {\n    try {\n      const res = await fetch(API_URL + \'/missions\', { headers: { \'X-API-Key\': API_KEY } });\n      const data = await res.json();\n      setHistorial((data.missions || []).sort((a, b) => b.mission_id.localeCompare(a.mission_id)));\n    } catch (e) { console.error(e); }\n  };\n\n  useEffect(() => { fetchHistorial(); }, []);\n  useEffect(() => {\n    if (missionStatus?.status === \'done\' || missionStatus?.status === \'error\') fetchHistorial();\n  }, [missionStatus]);\n\n  const statusColor = (s) => s === \'done\' ? \'#22c55e\' : s === \'error\' ? \'#ef4444\' : \'#facc15\';\n  const statusLabel = (m) => m.status === \'done\' ? (m.aprobado ? \'APROBADO\' : \'RECHAZADO\') : m.status === \'error\' ? \'ERROR\' : \'EN PROCESO\';\n\n  return (\n    <div className="sidebar">\n      <button className="new-mission-btn" onClick={onNewMission}>+ Nueva Mision</button>\n      <nav>\n        <div className={vista === \'panel\' ? \'nav-item active\' : \'nav-item\'} onClick={() => setVista(\'panel\')}><span className="nav-icon">⊞</span>Panel de Control</div>\n        <div className={vista === \'historial\' ? \'nav-item active\' : \'nav-item\'} onClick={() => { setVista(\'historial\'); fetchHistorial(); }}><span className="nav-icon">↻</span>Historial de Misiones</div>\n        <div className="nav-item"><span className="nav-icon">♨</span>Memoria Semantica</div>\n      </nav>\n      {vista === \'panel\' && (\n        <>\n          <div className="sb-section">\n            <div className="sb-section-title">Misiones Indexadas: {historial.length}</div>\n            <div className="sb-stat"><span className="lbl">Status</span><span className="val">{historial.length}</span></div>\n          </div>\n          <div className="sb-section">\n            <div className="sb-section-title">LearningEngine Pesos</div>\n            <div className="sb-stat"><span className="lbl">a (precision)</span><span className="val">0.5997</span></div>\n            <div className="sb-stat"><span className="lbl">b (recall)</span><span className="val">0.3003</span></div>\n            <div className="sb-stat"><span className="lbl">g (coverage)</span><span className="val">0.100</span></div>\n          </div>\n          <div className="sb-section">\n            <div className="sb-section-title">Estado del Sistema</div>\n            <div className="sb-stat"><span className="lbl">Misiones GCS</span><span className="val g">{historial.length}</span></div>\n            <div className="sb-stat"><span className="lbl">Mision Store</span><span className="val g">GCS</span></div>\n            <div className="sb-stat"><span className="lbl">LearningEngine</span><span className="val g">100%</span></div>\n            <div className="sb-stat"><span className="lbl">Configuracion</span><span className="val g">100%</span></div>\n          </div>\n        </>\n      )}\n      {vista === \'historial\' && (\n        <div className="sb-section" style={{flex:1,overflowY:\'auto\'}}>\n          <div className="sb-section-title">Historial ({historial.length})</div>\n          {historial.length === 0 && <div style={{color:\'#666\',fontSize:\'0.75rem\',padding:\'8px 0\'}}>Sin misiones registradas</div>}\n          {historial.map(m => (\n            <div key={m.mission_id} onClick={() => onLoadMission && onLoadMission(m.mission_id)} style={{padding:\'8px 4px\',borderBottom:\'1px solid #1e2a3a\',cursor:\'pointer\'}}>\n              <div style={{fontSize:\'0.72rem\',color:\'#00e5ff\',fontFamily:\'monospace\'}}>{m.mission_id}</div>\n              <div style={{fontSize:\'0.70rem\',color:statusColor(m.status),marginTop:\'2px\'}}>{statusLabel(m)}</div>\n            </div>\n          ))}\n        </div>\n      )}\n      <div style={{marginTop:\'auto\'}}><div className="nav-item"><span className="nav-icon">♁</span>Configuracion</div></div>\n    </div>\n  );\n};\n\nexport default Sidebar;', encoding=chr(39)utf-8chr(39))
-print(chr(39)OKchr(39))
+﻿content = '''import React, { useState, useEffect } from 'react';
+import { getMissions } from '../services/apiService';
+
+const Sidebar = ({ onNewMission, missionStatus, activeView, onViewChange, systemStats }) => {
+  const [missions, setMissions] = useState([]);
+  const [loadingMissions, setLoadingMissions] = useState(false);
+
+  useEffect(() => {
+    if (activeView === 'historial') {
+      setLoadingMissions(true);
+      getMissions()
+        .then(data => setMissions(data.missions || []))
+        .catch(() => setMissions([]))
+        .finally(() => setLoadingMissions(false));
+    }
+  }, [activeView]);
+
+  const alpha = systemStats?.alpha ?? '0.5977';
+  const beta = systemStats?.beta ?? '0.3023';
+  const gamma = systemStats?.gamma ?? '0.100';
+  const totalMissions = systemStats?.total ?? '...';
+
+  return (
+    <div className="sidebar">
+      <button className="new-mission-btn" onClick={onNewMission}>+ Nueva Mision</button>
+      <nav>
+        <div className={"nav-item" + (activeView === "panel" ? " active" : "")} onClick={() => onViewChange("panel")}>
+          <span className="nav-icon">⊞</span>Panel de Control
+        </div>
+        <div className={"nav-item" + (activeView === "historial" ? " active" : "")} onClick={() => onViewChange("historial")}>
+          <span className="nav-icon">↻</span>Historial de Misiones
+        </div>
+        <div className={"nav-item" + (activeView === "memoria" ? " active" : "")} onClick={() => onViewChange("memoria")}>
+          <span className="nav-icon">◈</span>Memoria Semantica
+        </div>
+      </nav>
+
+      {activeView === "panel" && (
+        <>
+          <div className="sb-section">
+            <div className="sb-section-title">Misiones Indexadas</div>
+            <div className="sb-stat"><span className="lbl">Total</span><span className="val">{totalMissions}</span></div>
+          </div>
+          <div className="sb-section">
+            <div className="sb-section-title">LearningEngine Pesos</div>
+            <div className="sb-stat"><span className="lbl">α (precision)</span><span className="val">{alpha}</span></div>
+            <div className="sb-stat"><span className="lbl">β (recall)</span><span className="val">{beta}</span></div>
+            <div className="sb-stat"><span className="lbl">γ (coverage)</span><span className="val">{gamma}</span></div>
+          </div>
+          <div className="sb-section">
+            <div className="sb-section-title">Estado del Sistema</div>
+            <div className="sb-stat"><span className="lbl">Interventoria</span><span className="val g">ACTIVA</span></div>
+            <div className="sb-stat"><span className="lbl">Mision Store</span><span className="val g">GCS</span></div>
+            <div className="sb-stat"><span className="lbl">LearningEngine</span><span className="val g">100%</span></div>
+            <div className="sb-stat"><span className="lbl">Configuracion</span><span className="val g">100%</span></div>
+          </div>
+        </>
+      )}
+
+      {activeView === "historial" && (
+        <div className="sb-section" style={{flex:1,overflowY:"auto"}}>
+          <div className="sb-section-title">Historial de Misiones</div>
+          {loadingMissions && <div style={{color:"var(--text-dim)",fontSize:"0.7rem",padding:"8px 0"}}>Cargando...</div>}
+          {!loadingMissions && missions.length === 0 && (
+            <div style={{color:"var(--text-dim)",fontSize:"0.7rem",padding:"8px 0"}}>Sin misiones registradas.</div>
+          )}
+          {!loadingMissions && missions.map(m => (
+            <div key={m.mission_id} style={{padding:"8px 0",borderBottom:"1px solid var(--border)"}}>
+              <div style={{fontFamily:"monospace",fontSize:"0.68rem",color:"var(--accent)"}}>{m.mission_id}</div>
+              <div style={{display:"flex",justifyContent:"space-between",marginTop:"3px"}}>
+                <span style={{fontSize:"0.65rem",color: m.status === "done" ? "var(--green)" : m.status === "error" ? "var(--red)" : "var(--yellow)"}}>{m.status?.toUpperCase()}</span>
+                <span style={{fontSize:"0.65rem",color: m.aprobado ? "var(--green)" : "var(--text-dim)"}}>{m.aprobado ? "APROBADO" : m.aprobado === false ? "RECHAZADO" : "—"}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeView === "memoria" && (
+        <div className="sb-section" style={{flex:1,overflowY:"auto"}}>
+          <div className="sb-section-title">Memoria Semantica</div>
+          <div className="sb-stat"><span className="lbl">Misiones indexadas</span><span className="val">{totalMissions}</span></div>
+          <div className="sb-stat"><span className="lbl">Dims embedding</span><span className="val">768</span></div>
+          <div className="sb-stat"><span className="lbl">Modelo</span><span className="val" style={{fontSize:"0.62rem"}}>text-embedding-004</span></div>
+          <div className="sb-stat"><span className="lbl">Bucket GCS</span><span className="val g">ACTIVO</span></div>
+          <div style={{marginTop:"12px"}}>
+            <div className="sb-section-title">LearningEngine</div>
+            <div className="sb-stat"><span className="lbl">α precision</span><span className="val">{alpha}</span></div>
+            <div className="sb-stat"><span className="lbl">β recall</span><span className="val">{beta}</span></div>
+            <div className="sb-stat"><span className="lbl">γ coverage</span><span className="val">{gamma}</span></div>
+            <div className="sb-stat"><span className="lbl">Busqueda</span><span className="val g">SEMANTICA</span></div>
+          </div>
+        </div>
+      )}
+
+      <div style={{marginTop:"auto"}}>
+        <div className={"nav-item" + (activeView === "config" ? " active" : "")} onClick={() => onViewChange("config")}>
+          <span className="nav-icon">⚙</span>Configuracion
+        </div>
+      </div>
+    </div>
+  );
+};
+export default Sidebar;'''
+open('maiie-web/src/components/Sidebar.jsx', 'w', encoding='utf-8').write(content)
+print('OK')

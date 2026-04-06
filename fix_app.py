@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿content = '''import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import Sidebar from './components/Sidebar';
 import GraphConsole from './components/GraphConsole';
@@ -19,16 +19,12 @@ function App() {
   const statusRef = useRef(null);
 
   useEffect(() => {
-    let cancelled = false;
     getMissions()
       .then(data => {
-        if (!cancelled) {
-          const missions = data.missions || [];
-          setSystemStats({ total: missions.length });
-        }
+        const missions = data.missions || [];
+        setSystemStats({ total: missions.length });
       })
-      .catch(() => { if (!cancelled) setSystemStats({ total: '?' }); });
-    return () => { cancelled = true; };
+      .catch(() => setSystemStats({ total: '?' }));
   }, []);
 
   const handleSend = async () => {
@@ -101,7 +97,6 @@ function App() {
         {activeView === 'memoria' && (
           <div style={{flex:1,padding:'24px',overflowY:'auto'}}>
             <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Memoria Semantica</div>
-            <MemoriaView systemStats={systemStats} />
           </div>
         )}
         {activeView === 'config' && (
@@ -203,27 +198,6 @@ function ConfigView() {
   );
 }
 
-function MemoriaView({ systemStats }) {
-  const total = systemStats?.total ?? '...';
-  return (
-    <div style={{display:'flex',flexDirection:'column',gap:'12px',maxWidth:'520px'}}>
-      {[
-        ['Misiones indexadas', String(total)],
-        ['Dims embedding', '768'],
-        ['Modelo embedding', 'text-embedding-004'],
-        ['Bucket GCS', 'gs://maiie-missions-prod'],
-        ['Busqueda semantica', 'ACTIVA'],
-        ['alpha precision', '0.5977'],
-        ['beta recall', '0.3023'],
-        ['gamma coverage', '0.100'],
-      ].map(([k, v]) => (
-        <div key={k} style={{background:'var(--panel-bg)',border:'1px solid var(--border)',borderRadius:'6px',padding:'10px 14px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <span style={{fontSize:'0.72rem',color:'var(--text-dim)',letterSpacing:'0.05em'}}>{k}</span>
-          <span style={{fontSize:'0.72rem',color:'var(--accent)',fontFamily:'monospace'}}>{v}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export default App;
+export default App;'''
+open('maiie-web/src/App.jsx', 'w', encoding='utf-8').write(content)
+print('OK')
