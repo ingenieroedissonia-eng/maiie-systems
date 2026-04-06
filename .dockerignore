@@ -1,0 +1,27 @@
+# -----------------------------------------
+# MAIIE Docker Ignore
+# Registro 24
+# -----------------------------------------
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.env
+
+output/
+logs/
+reports/
+
+.git
+.gitignore
+
+venv/
+.env/
+
+*.log
+*.tmp
+*.cache
+
+node_modules/

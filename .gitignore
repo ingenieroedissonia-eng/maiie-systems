@@ -1,0 +1,11 @@
+﻿__pycache__/
+*.pyc
+.env
+output/
+logs/
+venv/
+*.log
+*.tmp
+maiie-web/node_modules/
+node_modules/
+.vercel/

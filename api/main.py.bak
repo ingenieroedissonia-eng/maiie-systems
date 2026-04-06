@@ -1,0 +1,221 @@
+"""
+MAIIE System V2 - API Gateway
+Módulo: Exposición del sistema mediante API
+Capa: Interface
+Versión: 2.2.0
+
+CHANGELOG v2.2.0:
+- ADD: Endpoint POST /publish-sistema — publica múltiples misiones
+       (una ejecución completa del Planner) como un único repositorio
+       consolidado en GitHub via GitHubPublisher.publicar_sistema().
+       Recibe lista de mission_ids en orden de ejecución.
+       Los archivos de todas las misiones se consolidan en un solo repo.
+       Sin cambios en /publish ni en /mission.
+
+CHANGELOG v2.1.0:
+- ADD: Endpoint POST /publish — publica una misión aprobada como repo
+       privado en GitHub via GitHubPublisher.
+       Requiere GITHUB_TOKEN y GITHUB_USERNAME en config/.env.
+       Si no están configurados retorna 400 con mensaje claro.
+       Completamente independiente del pipeline — no toca /mission.
+
+CHANGELOG v2.0.1:
+- ADD: Logging activado para diagnóstico.
+"""
+
+import os
+import sys
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(name)s - %(levelname)s - %(message)s"
+)
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from orchestrator.main import MAIIE_System
+from orchestrator.pipeline import IterativePipeline
+from core.planner import MAIIEPlanner
+from orchestrator.planner_executor import PlannerExecutor
+
+app = FastAPI(
+    title="MAIIE API",
+    description="Motor de Ingeniería de Sistemas con IA",
+    version="2.2"
+)
+
+sistema          = MAIIE_System()
+pipeline         = IterativePipeline(max_iteraciones=3)
+planner          = MAIIEPlanner(sistema)
+planner_executor = PlannerExecutor(planner, pipeline)
+
+USAR_PLANNER = True  # False → bypass directo al pipeline original
+
+
+# ------------------------------------------------------------------
+# MODELOS DE REQUEST / RESPONSE
+# ------------------------------------------------------------------
+
+class MissionRequest(BaseModel):
+    orden: str
+
+
+class MissionResponse(BaseModel):
+    aprobado: bool
+    iteracion: int
+    observaciones: str
+
+
+class PublishRequest(BaseModel):
+    mission_id:  str
+    repo_nombre: Optional[str] = None
+    descripcion: Optional[str] = ""
+
+
+class PublishResponse(BaseModel):
+    repo_url:   str
+    archivos:   int
+    errores:    list
+    mission_id: str
+
+
+class PublishSistemaRequest(BaseModel):
+    mission_ids:  List[str]
+    repo_nombre:  Optional[str] = None
+    descripcion:  Optional[str] = ""
+
+
+class PublishSistemaResponse(BaseModel):
+    repo_url:           str
+    archivos:           int
+    errores:            list
+    mission_ids:        List[str]
+    missions_fallidas:  List[str]
+
+
+# ------------------------------------------------------------------
+# ENDPOINTS
+# ------------------------------------------------------------------
+
+@app.get("/")
+def root():
+    return {"mensaje": "MAIIE API ONLINE"}
+
+
+@app.post("/mission", response_model=MissionResponse)
+def ejecutar_mision(request: MissionRequest):
+
+    if USAR_PLANNER:
+        resultados = planner_executor.ejecutar(sistema, request.orden)
+        resultado  = resultados[-1] if resultados else None
+    else:
+        resultado = pipeline.ejecutar_mision(sistema, request.orden)
+
+    return MissionResponse(
+        aprobado=resultado.aprobado,
+        iteracion=resultado.iteracion,
+        observaciones=resultado.observaciones
+    )
+
+
+@app.post("/publish", response_model=PublishResponse)
+def publicar_mision(request: PublishRequest):
+    """
+    Publica una misión aprobada como repositorio privado en GitHub.
+
+    Requiere en config/.env:
+        GITHUB_TOKEN    — Personal Access Token con scope 'repo'
+        GITHUB_USERNAME — Usuario u organización de GitHub
+
+    Args:
+        mission_id:  ID de la misión (ej: mission_20260319_183701_a935f67f)
+        repo_nombre: Nombre del repo en GitHub (opcional)
+        descripcion: Descripción del repo (opcional)
+    """
+    try:
+        from utils.github_publisher import GitHubPublisher
+        publisher = GitHubPublisher()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inicializando GitHubPublisher: {e}")
+
+    try:
+        resultado = publisher.publicar_mision(
+            mission_id=request.mission_id,
+            repo_nombre=request.repo_nombre or None,
+            descripcion=request.descripcion or "",
+        )
+        return PublishResponse(
+            repo_url=resultado["repo_url"],
+            archivos=resultado["archivos"],
+            errores=resultado["errores"],
+            mission_id=resultado["mission_id"],
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {e}")
+
+
+@app.post("/publish-sistema", response_model=PublishSistemaResponse)
+def publicar_sistema(request: PublishSistemaRequest):
+    """
+    Publica un sistema completo (múltiples misiones del Planner) como
+    un único repositorio consolidado en GitHub.
+
+    Todos los archivos de todas las misiones se consolidan en un solo repo.
+    Si dos misiones generan el mismo archivo, la última versión gana.
+
+    Args:
+        mission_ids:  Lista de IDs en orden de ejecución del Planner.
+        repo_nombre:  Nombre del repo (opcional — se genera desde el primer ID)
+        descripcion:  Descripción del repo (opcional)
+
+    Ejemplo:
+        {
+            "mission_ids": [
+                "mission_20260320_015908_e4dbdde0",
+                "mission_20260320_015946_52681631",
+                "mission_20260320_020245_48bd2f67"
+            ],
+            "repo_nombre": "email-processing-system"
+        }
+    """
+    if not request.mission_ids:
+        raise HTTPException(status_code=400, detail="mission_ids no puede estar vacío")
+
+    try:
+        from utils.github_publisher import GitHubPublisher
+        publisher = GitHubPublisher()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inicializando GitHubPublisher: {e}")
+
+    try:
+        resultado = publisher.publicar_sistema(
+            mission_ids=request.mission_ids,
+            repo_nombre=request.repo_nombre or None,
+            descripcion=request.descripcion or "",
+        )
+        return PublishSistemaResponse(
+            repo_url=resultado["repo_url"],
+            archivos=resultado["archivos"],
+            errores=resultado["errores"],
+            mission_ids=resultado["mission_ids"],
+            missions_fallidas=resultado["missions_fallidas"],
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {e}")
