@@ -9,3 +9,5 @@ venv/
 maiie-web/node_modules/
 node_modules/
 .vercel/
+.vercel
+.env*.local
