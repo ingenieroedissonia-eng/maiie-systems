@@ -16,8 +16,9 @@ const MissionForm = ({ onSendOrder }) => {
      * Valida los campos y, si son válidos, llama al callback onSendOrder.
      * @param {React.FormEvent<HTMLFormElement>} event - El evento del formulario.
      */
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        if (isSubmitting) return;
         setError('');
 
         if (!missionName.trim() || !missionDescription.trim()) {
@@ -28,7 +29,7 @@ const MissionForm = ({ onSendOrder }) => {
         setIsSubmitting(true);
 
         try {
-            onSendOrder({
+            await onSendOrder({
                 name: missionName,
                 description: missionDescription,
             });
