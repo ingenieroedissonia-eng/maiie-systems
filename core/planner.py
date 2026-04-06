@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - Planner Cognitivo
 Modulo: descomposicion de ordenes complejas en submisiones atomicas
 Capa: Core

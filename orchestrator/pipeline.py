@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - Iterative Pipeline
 MÃ³dulo: OrquestaciÃ³n de ciclo de refinamiento
 Capa: Orchestrator

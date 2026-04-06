@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - Plan Validator
 Modulo: Validacion estructural del plan antes de ejecutar
 Capa: Core

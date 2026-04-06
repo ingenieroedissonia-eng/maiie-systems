@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - API Gateway
 MÃ³dulo: ExposiciÃ³n del sistema mediante API
 Capa: Interface

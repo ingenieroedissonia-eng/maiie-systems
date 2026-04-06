@@ -1,4 +1,4 @@
-﻿"""
+"""
 MAIIE System V2 - Project State Manager
 Modulo: Estado del proyecto durante ejecucion de submisiones
 Capa: Core
