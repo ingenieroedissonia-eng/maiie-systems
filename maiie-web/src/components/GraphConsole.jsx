@@ -49,11 +49,12 @@ const buildEdges = (nodes) => {
     const b = nodes[i + 1];
     const sameRow = a.row === b.row;
     if (sameRow) {
-      edges.push({ x1: a.x + W, y1: cy(a), x2: b.x, y2: cy(b), key: a.id + '-' + b.id });
+      edges.push({ x1: a.x + W, y1: cy(a), x2: b.x, y2: cy(b), key: a.id + '-' + b.id, bent: false });
     } else {
       const lastInRow = nodes.filter(n => n.row === a.row).slice(-1)[0];
       if (lastInRow.id === a.id) {
-        edges.push({ x1: cx(a), y1: a.y + H, x2: cx(b), y2: b.y, key: a.id + '-' + b.id });
+        const midY = a.y + H + (b.y - a.y - H) / 2;
+        edges.push({ x1: cx(a), y1: a.y + H, x2: cx(a), y2: midY, x3: cx(b), y3: midY, x4: cx(b), y4: b.y, key: a.id + '-' + b.id, bent: true });
       }
     }
   }
@@ -102,12 +103,22 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
       getSubmissions(missionId)
         .then(data => {
           const subs = data.submisiones || [];
-          if (subs.length > nodes.length) setNodes(buildLayout(subs));
+          if (subs.length > 0) setNodes(buildLayout(subs));
+          if (data.status === 'done' || data.status === 'completed') {
+            setNodes(prev => prev.map(n => ({ ...n, status: 'done' })));
+            clearInterval(poll);
+          }
         })
         .catch(() => {});
     }, 5000);
     return () => clearInterval(poll);
   }, [missionId, missionStatus?.status]);
+
+  useEffect(() => {
+    if (missionStatus?.status === 'done') {
+      setNodes(prev => prev.map(n => ({ ...n, status: 'done' })));
+    }
+  }, [missionStatus?.status]);
 
   if (!missionId) return (
     <div className="graph-area">
@@ -152,7 +163,11 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
                   <path d="M0,0 L0,7 L7,3.5 z" fill="#1e3050" />
                 </marker>
               </defs>
-              {edges.map(e => (
+              {edges.map(e => e.bent ? (
+                <polyline key={e.key}
+                  points={e.x1+','+e.y1+' '+e.x2+','+e.y2+' '+e.x3+','+e.y3+' '+e.x4+','+e.y4}
+                  fill="none" stroke="#1e3050" strokeWidth="1.5" markerEnd="url(#arr)" />
+              ) : (
                 <line key={e.key} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2}
                   stroke="#1e3050" strokeWidth="1.5" markerEnd="url(#arr)" />
               ))}

@@ -16,6 +16,7 @@ function App() {
   const [mDesc, setMDesc] = useState('');
   const [activeView, setActiveView] = useState('panel');
   const [systemStats, setSystemStats] = useState(null);
+  const [allMissions, setAllMissions] = useState(null);
   const statusRef = useRef(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ function App() {
         if (!cancelled) {
           const missions = data.missions || [];
           setSystemStats({ total: missions.length });
+          setAllMissions(missions);
         }
       })
       .catch(() => { if (!cancelled) setSystemStats({ total: '?' }); });
@@ -95,7 +97,7 @@ function App() {
         {activeView === 'historial' && (
           <div style={{flex:1,padding:'24px',overflowY:'auto'}}>
             <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Historial de Misiones</div>
-            <HistorialView />
+            <HistorialView missions={allMissions} />
           </div>
         )}
         {activeView === 'memoria' && (
@@ -148,16 +150,17 @@ function App() {
   );
 }
 
-function HistorialView() {
-  const [missions, setMissions] = useState([]);
-  const [loading, setLoading] = useState(true);
+function HistorialView({ missions: propMissions }) {
+  const [missions, setMissions] = useState(propMissions || []);
+  const [loading, setLoading] = useState(!propMissions);
 
   useEffect(() => {
+    if (propMissions) { setMissions(propMissions); setLoading(false); return; }
     getMissions()
       .then(data => setMissions(data.missions || []))
       .catch(() => setMissions([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [propMissions]);
 
   if (loading) return <div style={{color:'var(--text-dim)',fontSize:'0.8rem'}}>Cargando misiones...</div>;
   if (missions.length === 0) return <div style={{color:'var(--text-dim)',fontSize:'0.8rem'}}>Sin misiones registradas.</div>;
