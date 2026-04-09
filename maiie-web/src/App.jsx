@@ -8,6 +8,10 @@ import { getMissionStatus, sendMissionOrder, getMissions } from './services/apiS
 function App() {
   const [missionId, setMissionId] = useState(null);
   const [missionStatus, setMissionStatus] = useState(null);
+  const [executionState, setExecutionState] = useState({
+  isActive: false,
+  status: null
+});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -43,6 +47,10 @@ function App() {
       if (res?.mission_id) {
         setMissionId(res.mission_id);
         setMissionStatus(res);
+        setExecutionState({
+  isActive: true,
+  status: 'running'
+});
         statusRef.current = res;
         setMName(''); setMDesc('');
       } else throw new Error('Respuesta invalida del servidor.');
@@ -58,7 +66,13 @@ function App() {
       try {
         const s = await getMissionStatus(missionId);
         statusRef.current = s; setMissionStatus(s);
-        if (s?.status === 'done' || s?.status === 'error') clearInterval(id);
+        if (s?.status === 'done' || s?.status === 'error') {
+  setExecutionState({
+    isActive: false,
+    status: s.status
+  });
+  clearInterval(id);
+}
       } catch (e) { setError(e.message); clearInterval(id); }
     }, 3000);
     return () => clearInterval(id);

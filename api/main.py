@@ -146,14 +146,14 @@ def root():
 @app.post("/mission", response_model=MissionResponse)
 def ejecutar_mision(request: MissionRequest):
     mission_id = _uuid.uuid4().hex[:12]
-    submisiones = []
+    submissions = []
     if USAR_PLANNER:
         try:
-            submisiones_raw = planner_executor.planner.decompose(request.orden)
-            submisiones = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in submisiones_raw]
+            submissions_raw = planner_executor.planner.decompose(request.orden)
+            submissions = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in submissions_raw]
         except Exception:
-            submisiones = []
-    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submisiones": submisiones})
+            submissions = []
+    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": submissions})
 
     def _run():
         try:
@@ -162,7 +162,15 @@ def ejecutar_mision(request: MissionRequest):
                 resultado  = resultados[-1] if resultados else None
             else:
                 resultado = pipeline.ejecutar_mision(sistema, request.orden)
-            _gcs_guardar(mission_id, {"status": "done", "aprobado": resultado.aprobado, "iteracion": resultado.iteracion, "observaciones": resultado.observaciones, "logs": [], "submisiones": submisiones})
+            _gcs_guardar(mission_id, {
+    "status": "done",
+    "aprobado": resultado.aprobado if resultado else False,
+    "iteracion": resultado.iteracion if resultado else None,
+    "observaciones": resultado.observaciones if resultado else "Sin resultado",
+    "logs": [],
+    "submissions": [dict(s, status="done") for s in submissions],
+    "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
+})
         except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
@@ -171,11 +179,11 @@ def ejecutar_mision(request: MissionRequest):
 
 
 @app.get("/mission/{mission_id}/submissions")
-def obtener_submisiones(mission_id: str):
+def obtener_submissions(mission_id: str):
     data = _gcs_obtener(mission_id)
     if not data:
         raise HTTPException(status_code=404, detail="Mission no encontrada")
-    return {"mission_id": mission_id, "submisiones": data.get("submisiones", []), "status": data.get("status")}
+    return {"mission_id": mission_id, "submissions": data.get("submissions", []), "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
 
 @app.get("/mission/{mission_id}/status", response_model=MissionStatusResponse)
 def estado_mision(mission_id: str):

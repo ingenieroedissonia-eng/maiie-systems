@@ -25,3 +25,10 @@ venv/
 *.cache
 
 node_modules/
+fix_*.py
+check_*.py
+list_*.py
+*.bak
+cleanup.py
+upload_env.py
+backfill_*.py
