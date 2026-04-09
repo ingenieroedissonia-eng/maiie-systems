@@ -16,6 +16,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [codigoGenerado, setCodigoGenerado] = useState(null);
   const [mName, setMName] = useState('');
   const [mDesc, setMDesc] = useState('');
   const [activeView, setActiveView] = useState('panel');
@@ -104,8 +105,9 @@ function App() {
               missionId={missionId}
               selectedNode={selectedNode}
               onSelectNode={setSelectedNode}
+              onCodigoGenerado={setCodigoGenerado}
             />
-            <NodeDetailPanel selectedNode={selectedNode} missionStatus={missionStatus} />
+            <NodeDetailPanel selectedNode={selectedNode} missionStatus={missionStatus} codigoGenerado={codigoGenerado} />
           </>
         )}
         {activeView === 'historial' && (

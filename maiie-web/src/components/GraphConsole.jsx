@@ -53,7 +53,7 @@ const buildEdges = (nodes) => {
   return edges;
 };
 
-const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) => {
+const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, onCodigoGenerado }) => {
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const pollRef = useRef(null);
@@ -69,6 +69,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode }) 
         if (stopped) return;
         const subs = data.submissions || [];
         const isDone = data.status === 'done' || data.status === 'completed' || data.status === 'error';
+        if (data.codigo_generado && onCodigoGenerado) onCodigoGenerado(data.codigo_generado);
         if (subs.length > 0) {
           setNodes(buildLayout(isDone ? subs.map(s => ({...s, status: 'done'})) : subs));
           setLoading(false);
