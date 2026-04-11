@@ -213,7 +213,7 @@ function ConfigView() {
     <div style={{display:'flex',flexDirection:'column',gap:'12px',maxWidth:'520px'}}>
       {[
         ['Pipeline Version', 'v4.19.0'],
-        ['Cloud Run Revision', 'maiie-system-00009-s8f'],
+        ['Cloud Run Revision', 'maiie-system-00011-pr4'],
         ['ARCHITECT', 'google/gemini-2.5-flash-lite'],
         ['ENGINEER_BASE', 'google/gemini-2.5-pro'],
         ['AUDITOR', 'google/gemini-2.5-pro'],
