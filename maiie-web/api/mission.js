@@ -1,4 +1,6 @@
-﻿export default async function handler(req, res) {
+﻿export const config = { maxDuration: 30 };
+
+export default async function handler(req, res) {
   const API_URL = 'https://maiie-system-247946064488.us-central1.run.app';
 
   res.setHeader('Access-Control-Allow-Origin', '*');
