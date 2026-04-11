@@ -97,6 +97,7 @@ function App() {
           activeView={activeView}
           onViewChange={setActiveView}
           systemStats={systemStats}
+          allMissions={allMissions}
         />
         {activeView === 'panel' && (
           <>

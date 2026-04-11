@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getMissions } from '../services/apiService';
 
-const Sidebar = ({ onNewMission, missionStatus, activeView, onViewChange, systemStats }) => {
-  const [missions, setMissions] = useState([]);
-  const [loadingMissions, setLoadingMissions] = useState(false);
-
-  useEffect(() => {
-    if (activeView === 'historial') {
-      setLoadingMissions(true);
-      getMissions()
-        .then(data => setMissions(data.missions || []))
-        .catch(() => setMissions([]))
-        .finally(() => setLoadingMissions(false));
-    }
-  }, [activeView]);
+const Sidebar = ({ onNewMission, missionStatus, activeView, onViewChange, systemStats, allMissions }) => {
+  const missions = allMissions || [];
+  const loadingMissions = allMissions === null;
 
   const alpha = systemStats?.alpha ?? '0.5977';
   const beta = systemStats?.beta ?? '0.3023';
