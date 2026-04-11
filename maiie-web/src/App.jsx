@@ -241,9 +241,9 @@ function MemoriaView({ systemStats }) {
         ['Modelo embedding', 'text-embedding-004'],
         ['Bucket GCS', 'gs://maiie-missions-prod'],
         ['Busqueda semantica', 'ACTIVA'],
-        ['alpha precision', '0.5977'],
-        ['beta recall', '0.3023'],
-        ['gamma coverage', '0.100'],
+        ['alpha precision', String(systemStats?.alpha ?? '0.6')],
+        ['beta recall', String(systemStats?.beta ?? '0.3')],
+        ['gamma coverage', String(systemStats?.gamma ?? '0.1')],
       ].map(([k, v]) => (
         <div key={k} style={{background:'var(--panel-bg)',border:'1px solid var(--border)',borderRadius:'6px',padding:'10px 14px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <span style={{fontSize:'0.72rem',color:'var(--text-dim)',letterSpacing:'0.05em'}}>{k}</span>
