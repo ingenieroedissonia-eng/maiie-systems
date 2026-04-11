@@ -60,7 +60,7 @@ class PlannerExecutor:
             return False
         return True
 
-    def ejecutar(self, orquestador: AgentExecutor, orden: str, submisiones_previas: List[dict] = None) -> List[Any]:
+    def ejecutar(self, orquestador: AgentExecutor, orden: str, submisiones_previas: List[dict] = None, on_submision_done=None) -> List[Any]:
         logger.info("Iniciando ejecucion con Planner + contexto incremental")
 
         if submisiones_previas:
@@ -136,6 +136,12 @@ class PlannerExecutor:
                 continue
             resultados.append(resultado)
             ids_resueltos.add(sub["id"])
+            if on_submision_done:
+                try:
+                    _feedback = resultado.reporte_auditoria if resultado and hasattr(resultado, "reporte_auditoria") else None
+                    on_submision_done(sub["id"], "done", resultado.codigo_final if resultado and resultado.codigo_final else None, feedback=_feedback)
+                except Exception as _cb_err:
+                    logger.warning(f"Callback on_submision_done error: {_cb_err}")
 
             if resultado and resultado.codigo_final:
                 estado_proyecto.registrar(sub["descripcion"], resultado.codigo_final)

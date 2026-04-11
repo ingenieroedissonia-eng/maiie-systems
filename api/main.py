@@ -157,8 +157,26 @@ def ejecutar_mision(request: MissionRequest):
 
     def _run():
         try:
+            def _on_submision_done(sub_id, status, codigo, feedback=None):
+                try:
+                    estado_actual = _gcs_obtener(mission_id)
+                    if not estado_actual:
+                        return
+                    subs = estado_actual.get("submissions", [])
+                    for s in subs:
+                        if s.get("id") == sub_id:
+                            s["status"] = status
+                            s["codigo"] = codigo
+                            if feedback is not None:
+                                s["feedback"] = feedback
+                            break
+                    estado_actual["submissions"] = subs
+                    _gcs_guardar(mission_id, estado_actual)
+                except Exception as _e:
+                    logger.warning(f"_on_submision_done error sub {sub_id}: {_e}")
+
             if USAR_PLANNER:
-                submisiones, resultados = planner_executor.ejecutar(sistema, request.orden, submisiones_previas=submisiones_iniciales)
+                submisiones, resultados = planner_executor.ejecutar(sistema, request.orden, submisiones_previas=submisiones_iniciales, on_submision_done=_on_submision_done)
                 resultado  = resultados[-1] if resultados else None
             else:
                 submisiones = []
