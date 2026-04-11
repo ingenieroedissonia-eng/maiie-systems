@@ -146,21 +146,16 @@ def root():
 @app.post("/mission", response_model=MissionResponse)
 def ejecutar_mision(request: MissionRequest):
     mission_id = _uuid.uuid4().hex[:12]
-    submissions = []
-    if USAR_PLANNER:
-        try:
-            submissions_raw = planner_executor.planner.decompose(request.orden)
-            submissions = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in submissions_raw]
-        except Exception:
-            submissions = []
-    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": submissions})
+    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": []})
 
     def _run():
         try:
             if USAR_PLANNER:
-                resultados = planner_executor.ejecutar(sistema, request.orden)
+                submisiones, resultados = planner_executor.ejecutar(sistema, request.orden)
                 resultado  = resultados[-1] if resultados else None
             else:
+                submisiones = []
+                resultados = []
                 resultado = pipeline.ejecutar_mision(sistema, request.orden)
             _gcs_guardar(mission_id, {
     "status": "done",
@@ -172,7 +167,7 @@ def ejecutar_mision(request: MissionRequest):
         dict(s, status="done",
              feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) else None,
              codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
-        for i, s in enumerate(submissions)
+        for i, s in enumerate(submisiones)
     ],
     "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
 })

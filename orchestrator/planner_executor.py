@@ -145,4 +145,4 @@ class PlannerExecutor:
                 logger.warning(f"Submision {sub['id']} no genero codigo_final")
 
         logger.info(f"Ejecucion completa: {len(resultados)} resultado(s)")
-        return resultados
+        return submisiones, resultados
