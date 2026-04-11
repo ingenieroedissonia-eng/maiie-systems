@@ -3,7 +3,7 @@ import './index.css';
 import Sidebar from './components/Sidebar';
 import GraphConsole from './components/GraphConsole';
 import NodeDetailPanel from './components/NodeDetailPanel';
-import { getMissionStatus, sendMissionOrder, getMissions } from './services/apiService';
+import { getMissionStatus, sendMissionOrder, getMissions, getMetrics } from './services/apiService';
 
 function App() {
   const [missionId, setMissionId] = useState(null);
@@ -26,11 +26,19 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
-    getMissions()
-      .then(data => {
+    Promise.all([getMissions(), getMetrics()])
+      .then(([missionsData, metricsData]) => {
         if (!cancelled) {
-          const missions = data.missions || [];
-          setSystemStats({ total: missions.length });
+          const missions = missionsData.missions || [];
+          const le = metricsData.learning_engine || {};
+          setSystemStats({
+            total: missions.length,
+            alpha: le.alpha ?? '0.6',
+            beta: le.beta ?? '0.3',
+            gamma: le.gamma ?? '0.1',
+            calibrado: le.calibrado ?? false,
+            misiones_procesadas: le.misiones_procesadas ?? 0,
+          });
           setAllMissions(missions);
         }
       })

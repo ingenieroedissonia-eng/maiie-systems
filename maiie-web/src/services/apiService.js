@@ -78,3 +78,15 @@ export const getSubmissions = async (missionId) => {
     throw new NetworkError('Network request failed.');
   }
 };
+export const getMetrics = async () => {
+  try {
+    const response = await fetch('/api/metrics', {
+      headers: { 'x-app-token': APP_TOKEN },
+    });
+    if (!response.ok) throw new ApiError('API Error', response.status);
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new NetworkError('Network request failed.');
+  }
+};

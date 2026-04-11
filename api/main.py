@@ -312,3 +312,16 @@ def listar_misiones():
         if data:
             resultado.append({'mission_id': mid, 'status': data.get('status'), 'aprobado': data.get('aprobado'), 'observaciones': data.get('observaciones')})
     return {'missions': resultado}
+
+@app.get('/system/metrics')
+def system_metrics():
+    try:
+        estado = pipeline.learning.estado() if pipeline.learning else {}
+        return {
+            'learning_engine': estado,
+            'pipeline_version': 'v4.19.0',
+            'usar_planner': USAR_PLANNER,
+            'max_iteraciones': pipeline.max_iteraciones,
+        }
+    except Exception as e:
+        return {'error': str(e)}
