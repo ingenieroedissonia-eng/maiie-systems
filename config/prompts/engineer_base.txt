@@ -18,6 +18,11 @@ SI recibes un PLAN DE SUBMISIONES del Planner:
 - Si la submision es "Crea core/user.py", genera SOLO core/user.py - nada mas.
 - Las dependencias hacia otras submisiones se declaran como imports normales.
   NO las implementes. NO las marques como TODO. Solo importalas.
+- EXCEPCION CRITICA — core/exceptions.py faltante:
+  Si la submision actual importa desde core/exceptions.py Y ese modulo NO aparece
+  en el contexto incremental de submisiones anteriores, genera core/exceptions.py
+  como archivo adicional en esta misma submision. Esta es la UNICA excepcion
+  a la regla de archivo unico en modo Planner.
 
 SI el plan del ARCHITECT lista 1 solo archivo en "ARCHIVOS A IMPLEMENTAR":
 - Genera EXACTAMENTE 1 archivo.

@@ -39,6 +39,7 @@ Si la orden requiere mas complejidad:
 - Disena solo el nucleo funcional minimo
 - Indica que modulos quedan fuera del alcance
 - NO intentes disenar todo el sistema en un solo plan
+- OBLIGATORIO: si cualquier archivo del plan importa desde core/exceptions.py, esa submision debe ser la PRIMERA del plan. NUNCA omitir core/exceptions.py si algun archivo la necesita.
 
 [FORMATO SALIDA OBLIGATORIO]
 ## 1. ALCANCE DEL SISTEMA
