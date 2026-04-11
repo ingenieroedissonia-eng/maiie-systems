@@ -80,7 +80,7 @@ const NodeDetailPanel = ({ selectedNode, missionStatus, codigoGenerado }) => {
 
                 <span className="lbl">Aprobado</span>
 
-                <span className={`badge ${missionStatus.aprobado ? 'success' : 'retrying'}`}>{missionStatus.aprobado ? 'SI' : 'NO'}</span>
+                <span className={`badge ${s === 'success' ? 'success' : missionStatus.aprobado ? 'success' : 'retrying'}`}>{s === 'success' ? 'SI' : missionStatus.aprobado ? 'SI' : 'NO'}</span>
 
               </div>
 
