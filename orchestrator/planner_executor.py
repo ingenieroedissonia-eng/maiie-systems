@@ -60,14 +60,18 @@ class PlannerExecutor:
             return False
         return True
 
-    def ejecutar(self, orquestador: AgentExecutor, orden: str) -> List[Any]:
+    def ejecutar(self, orquestador: AgentExecutor, orden: str, submisiones_previas: List[dict] = None) -> List[Any]:
         logger.info("Iniciando ejecucion con Planner + contexto incremental")
 
-        try:
-            submisiones = self.planner.decompose(orden)
-        except PlannerFailedError as e:
-            logger.error(f"Mision abortada en fase de planificacion. Motivo: {e}")
-            return []
+        if submisiones_previas:
+            logger.info(f"Usando {len(submisiones_previas)} submisiones previas (sin nuevo decompose)")
+            submisiones = submisiones_previas
+        else:
+            try:
+                submisiones = self.planner.decompose(orden)
+            except PlannerFailedError as e:
+                logger.error(f"Mision abortada en fase de planificacion. Motivo: {e}")
+                return [], []
 
         validator = PlanValidator()
         valido, motivo = validator.validar(submisiones)

@@ -158,7 +158,7 @@ def ejecutar_mision(request: MissionRequest):
     def _run():
         try:
             if USAR_PLANNER:
-                submisiones, resultados = planner_executor.ejecutar(sistema, request.orden)
+                submisiones, resultados = planner_executor.ejecutar(sistema, request.orden, submisiones_previas=submisiones_iniciales)
                 resultado  = resultados[-1] if resultados else None
             else:
                 submisiones = []
