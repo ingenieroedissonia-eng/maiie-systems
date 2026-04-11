@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getSubmissions } from '../services/apiService';
 
 const W = 200; const H = 70;
@@ -67,7 +67,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     const fetch = () => {
       getSubmissions(missionId).then(data => {
         if (stopped) return;
-        const subs = data.submissions || [];
+        const subs = data.submisiones || [];
         const isDone = data.status === 'done' || data.status === 'completed' || data.status === 'error';
         if (data.codigo_generado && onCodigoGenerado) onCodigoGenerado(data.codigo_generado);
         if (subs.length > 0) {
@@ -82,7 +82,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
       }).catch(() => setLoading(false));
     };
     fetch();
-    pollRef.current = setInterval(() => { if (stopped) { clearInterval(pollRef.current); return; } doFetch(); }, 3000);
+    pollRef.current = setInterval(() => { if (stopped) { clearInterval(pollRef.current); return; } fetch(); }, 3000);
     return () => { stopped = true; if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
   }, [missionId]);
 
