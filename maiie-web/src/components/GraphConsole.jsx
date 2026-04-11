@@ -13,7 +13,7 @@ const buildLayout = (submissions) => submissions.map((sub, i) => {
     const lastSpace = cut.lastIndexOf(' ');
     file = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + '...';
   }
-  return { id: sub.id, file, descripcion: sub.descripcion, status: sub.status || 'pending',
+  return { id: sub.id, file, descripcion: sub.descripcion, feedback: sub.feedback || null, codigo: sub.codigo || null, status: sub.status || 'pending',
     x: (i % COLS) * COL_GAP + PAD_X, y: Math.floor(i / COLS) * ROW_GAP + PAD_Y,
     col: i % COLS, row: Math.floor(i / COLS) };
 });

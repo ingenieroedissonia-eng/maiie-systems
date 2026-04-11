@@ -168,7 +168,12 @@ def ejecutar_mision(request: MissionRequest):
     "iteracion": resultado.iteracion if resultado else None,
     "observaciones": resultado.observaciones if resultado else "Sin resultado",
     "logs": [],
-    "submissions": [dict(s, status="done") for s in submissions],
+    "submissions": [
+        dict(s, status="done",
+             feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) else None,
+             codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
+        for i, s in enumerate(submissions)
+    ],
     "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
 })
         except Exception as e:
@@ -183,7 +188,7 @@ def obtener_submissions(mission_id: str):
     data = _gcs_obtener(mission_id)
     if not data:
         raise HTTPException(status_code=404, detail="Mission no encontrada")
-    return {"mission_id": mission_id, "submissions": data.get("submissions", []), "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
+    return {"mission_id": mission_id, "submisiones": data.get("submissions", []), "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
 
 @app.get("/mission/{mission_id}/status", response_model=MissionStatusResponse)
 def estado_mision(mission_id: str):

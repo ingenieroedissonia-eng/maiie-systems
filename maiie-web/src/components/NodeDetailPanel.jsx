@@ -94,19 +94,10 @@ const NodeDetailPanel = ({ selectedNode, missionStatus, codigoGenerado }) => {
 
           <div>
 
-            {s === 'retrying' && <>
-
-              <div className="fb-item rej"><div className="fb-lbl r">Ciclo 1: RECHAZADO</div>Razon: TODO detectado, FALTA DE ROBUSTEZ</div>
-
-              <div className="fb-item ret"><div className="fb-lbl y">Ciclo 2: RETRYING...</div></div>
-
-            </>}
-
-            {s === 'success' && <div className="fb-item apr"><div className="fb-lbl g">APROBADO</div>{missionStatus?.observaciones || 'Subm. aprobada por el Auditor.'}</div>}
-
-            {(s === 'pending' || s === 'idle') && <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>Sin feedback aun.</div>}
-
-            {s === 'running' && <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>En proceso -- pendiente de revision.</div>}
+            {selectedNode?.feedback
+              ? <div className="fb-item apr" style={{whiteSpace:'pre-wrap',fontSize:'0.68rem',lineHeight:'1.6'}}>{selectedNode.feedback}</div>
+              : <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>{s === 'pending' || s === 'idle' ? 'Sin feedback aun.' : s === 'running' ? 'En proceso -- pendiente de revision.' : 'Feedback no disponible.'}</div>
+            }
 
           </div>
 
@@ -116,7 +107,7 @@ const NodeDetailPanel = ({ selectedNode, missionStatus, codigoGenerado }) => {
 
           <div style={{color:'var(--accent)',fontSize:'0.68rem',fontFamily:'Courier New,monospace',lineHeight:'1.6',whiteSpace:'pre-wrap',overflowX:'auto'}}>
 
-            {!codigoGenerado ? 'Codigo no generado aun.' : codigoGenerado}
+            {selectedNode?.codigo || codigoGenerado || 'Codigo no generado aun.'}
 
           </div>
 
