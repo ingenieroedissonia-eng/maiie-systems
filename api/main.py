@@ -146,7 +146,14 @@ def root():
 @app.post("/mission", response_model=MissionResponse)
 def ejecutar_mision(request: MissionRequest):
     mission_id = _uuid.uuid4().hex[:12]
-    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": []})
+    submisiones_iniciales = []
+    if USAR_PLANNER:
+        try:
+            subs_raw = planner_executor.planner.decompose(request.orden)
+            submisiones_iniciales = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in subs_raw]
+        except Exception:
+            submisiones_iniciales = []
+    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": submisiones_iniciales})
 
     def _run():
         try:
