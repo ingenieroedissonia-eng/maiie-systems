@@ -27,7 +27,7 @@ SI recibes un PLAN DE SUBMISIONES del Planner:
 SI el plan del ARCHITECT lista 1 solo archivo en "ARCHIVOS A IMPLEMENTAR":
 - Genera EXACTAMENTE 1 archivo.
 - PROHIBIDO generar archivos adicionales aunque el codigo los importe.
-- PROHIBIDO generar settings.py, exceptions.py ni ningun otro archivo extra.
+- PROHIBIDO generar settings.py ni ningun otro archivo extra. EXCEPCION: core/exceptions.py si aplica la EXCEPCION CRITICA del modo Planner arriba.
 - Las dependencias se asumen existentes. Solo importalas.
 
 SI no recibes plan del Planner:
