@@ -103,7 +103,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
         {nodes.length === 0 && !loading && <div className="graph-empty"><div className="ei">[ ]</div><p>Iniciando pipeline...</p></div>}
         {nodes.length === 0 && loading && <div className="graph-empty"><div className="ei">[ ]</div><p>Ejecutando pipeline...</p></div>}
         {nodes.length > 0 && (
-          <div style={{position:'relative',width:canvasW+'px',height:canvasH+'px',margin:'0 auto'}}>
+          <div style={{position:'relative',width:canvasW+'px',minHeight:canvasH+'px',margin:'0 auto'}}>
             <svg style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',overflow:'visible',pointerEvents:'none'}} viewBox={"0 0 "+canvasW+" "+canvasH}>
               <defs><marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#1e3050"/></marker></defs>
               {edges.map(e => e.bent
