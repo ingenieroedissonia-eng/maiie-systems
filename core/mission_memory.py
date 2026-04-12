@@ -65,11 +65,14 @@ class MissionMemory:
         self.backend       = os.getenv("MAIIE_STORAGE_BACKEND", "local").lower().strip()
         self.bucket_name   = os.getenv("MAIIE_GCS_BUCKET", "")
 
-        if self.backend == "gcs":
-            self._init_gcs()
-        else:
+        self._gcs_client = None
+        self._gcs_bucket = None
+
+        if self.backend != "gcs":
             if not os.path.exists(self.missions_path):
                 logger.warning(f"Directorio de misiones no encontrado: {self.missions_path}")
+        else:
+            logger.info(f"GCS Memory configurado (lazy): gs://{self.bucket_name}")
 
         self._genai_disponible = self._inicializar_genai()
 
@@ -78,18 +81,14 @@ class MissionMemory:
     # ----------------------------------------------------------
 
     def _init_gcs(self):
-        try:
-            from google.cloud import storage as gcs
-            self._gcs_client = gcs.Client()
-            self._gcs_bucket = self._gcs_client.bucket(self.bucket_name)
-            logger.info(f"🧠 MissionMemory conectada a GCS: gs://{self.bucket_name}")
-        except ImportError:
-            raise RuntimeError(
-                "google-cloud-storage no está instalado. "
-                "Ejecuta: pip install google-cloud-storage"
-            )
-        except Exception as e:
-            raise RuntimeError(f"Error inicializando MissionMemory GCS: {e}")
+        if self._gcs_client is None:
+            try:
+                from google.cloud import storage as gcs
+                self._gcs_client = gcs.Client()
+                self._gcs_bucket = self._gcs_client.bucket(self.bucket_name)
+                logger.info(f"GCS Memory conectado: gs://{self.bucket_name}")
+            except Exception as e:
+                raise RuntimeError(f"Error conectando GCS Memory: {e}") from e
 
     # ----------------------------------------------------------
     # GOOGLE-GENAI
@@ -220,6 +219,7 @@ class MissionMemory:
             return None
 
     def _cargar_embedding_gcs(self, mission_id: str) -> Optional[List[float]]:
+        self._init_gcs()
         try:
             blob = self._gcs_bucket.blob(
                 f"{self.missions_path}/{mission_id}/mission_embedding.json"
@@ -299,6 +299,7 @@ class MissionMemory:
         return sorted(misiones)
 
     def _listar_misiones_gcs(self) -> List[str]:
+        self._init_gcs()
         try:
             prefix = f"{self.missions_path}/"
             blobs  = self._gcs_client.list_blobs(
@@ -339,6 +340,7 @@ class MissionMemory:
             return None
 
     def _cargar_manifest_gcs(self, mission_id: str) -> Optional[Dict]:
+        self._init_gcs()
         try:
             blob = self._gcs_bucket.blob(
                 f"{self.missions_path}/{mission_id}/mission_manifest.json"
@@ -371,6 +373,7 @@ class MissionMemory:
             return None
 
     def _cargar_arquitectura_gcs(self, mission_id: str) -> Optional[str]:
+        self._init_gcs()
         try:
             blob = self._gcs_bucket.blob(
                 f"{self.missions_path}/{mission_id}/architecture.md"
