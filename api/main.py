@@ -190,7 +190,7 @@ def ejecutar_mision(request: MissionRequest):
     "logs": [],
     "submissions": [
         dict(s, status="done",
-             feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) else None,
+             feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) and resultados[i].aprobado else None,
              codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
         for i, s in enumerate(submisiones)
     ],
