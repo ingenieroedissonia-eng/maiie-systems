@@ -205,7 +205,7 @@ def ejecutar_mision(request: MissionRequest):
                 logger.info('GitHub autopublish OK: ' + str(mission_id))
             except Exception as _ge:
                 logger.warning('GitHub autopublish error: ' + str(_ge))
-    except Exception as e:
+        except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
     threading.Thread(target=_run, daemon=True).start()
