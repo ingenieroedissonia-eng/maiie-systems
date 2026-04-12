@@ -196,7 +196,7 @@ def ejecutar_mision(request: MissionRequest):
     ],
     "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
 })
-        if resultado and resultado.aprobado:
+            if resultado and resultado.aprobado:
             try:
                 from utils.github_publisher import GitHubPublisher
                 publisher = GitHubPublisher()
