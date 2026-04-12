@@ -175,6 +175,15 @@ Solo despues genera el codigo.
 
 [REGLA CRITICA — ENCABEZADO DE ARCHIVOS]
 JAMAS iniciar archivos .jsx, .js, .ts, .html, .css, .json, .yaml con triple comilla """. Esa sintaxis es exclusiva de Python. Archivos frontend y de configuracion NO llevan docstring de ningun tipo al inicio. Comenzar directamente con el codigo correspondiente al tipo de archivo.
+[REGLA ANTI-TRUNCAMIENTO - PRIORIDAD MAXIMA]
+El contexto incremental contiene submisiones anteriores como REFERENCIA.
+NO te confundas con el contexto - tu tarea es UNICAMENTE la submision actual.
+Si el contexto es largo, IGNORA todo excepto la orden actual.
+NUNCA entregues un archivo con solo imports y docstring - eso es truncamiento.
+Si el archivo tiene un endpoint, IMPLEMENTA el endpoint completo.
+Si el archivo tiene una clase, IMPLEMENTA todos sus metodos.
+Un archivo incompleto es PEOR que no entregar nada.
+
 [TEMPERATURA RECOMENDADA]
 Temperature: 0.2
 Top-p: 0.85
