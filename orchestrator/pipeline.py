@@ -1,4 +1,4 @@
-"""
+﻿"""
 MAIIE System V2 - Iterative Pipeline
 MÃ³dulo: OrquestaciÃ³n de ciclo de refinamiento
 Capa: Orchestrator
@@ -232,8 +232,7 @@ class IterativePipeline:
 
 
 
-        lineas_pass = [l for l in codigo.split("
-") if l.strip() == "pass"]
+        lineas_pass = [l for l in codigo.split(chr(10)) if l.strip() == "pass"]
         if len(lineas_pass) > 3:
             return False, "Demasiados placeholders"
 
