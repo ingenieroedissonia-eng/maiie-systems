@@ -474,3 +474,4 @@ class MissionMemory:
         logger.info(f"🧠 Contexto cargado: {len(bloques)} misión(es) — modo {modo}")
 
         return contexto
+    
