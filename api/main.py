@@ -202,9 +202,9 @@ def ejecutar_mision(request: MissionRequest):
                 publisher = GitHubPublisher()
                 repo_path = resultado.repo_path
                 publisher.publicar_mision(mission_id=mission_id, repo_path=repo_path, descripcion=request.orden[:100])
-                logger.info(f'''GitHub autopublish OK: {mission_id}''')
+                logger.info('GitHub autopublish OK: ' + str(mission_id))
             except Exception as _ge:
-                logger.warning(f'''GitHub autopublish error: {_ge}''')
+                logger.warning('GitHub autopublish error: ' + str(_ge))
         except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
