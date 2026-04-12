@@ -132,24 +132,26 @@ class GCSStorage(StorageBackend):
     """
 
     def __init__(self, bucket_name: str):
-        try:
-            from google.cloud import storage as gcs
-            self._client = gcs.Client()
-            self._bucket = self._client.bucket(bucket_name)
-            self._bucket_name = bucket_name
-            logger.info(f"☁️ GCS Storage inicializado: gs://{bucket_name}")
-        except ImportError:
-            raise RuntimeError(
-                "google-cloud-storage no está instalado. "
-                "Ejecuta: pip install google-cloud-storage"
-            )
-        except Exception as e:
-            raise RuntimeError(f"Error inicializando GCS Storage: {e}")
+        self._bucket_name = bucket_name
+        self._client = None
+        self._bucket = None
+        logger.info(f"GCS Storage configurado (lazy): gs://{bucket_name}")
+
+    def _get_bucket(self):
+        if self._client is None:
+            try:
+                from google.cloud import storage as gcs
+                self._client = gcs.Client()
+                self._bucket = self._client.bucket(self._bucket_name)
+                logger.info("GCS conectado: gs://" + self._bucket_name)
+            except Exception as e:
+                raise RuntimeError("Error GCS: " + str(e)) from e
+        return self._bucket
 
     def write(self, path: str, content: str) -> None:
         """Sube el contenido como objeto GCS."""
         gcs_path = path.replace("\\", "/").lstrip("/")
-        blob = self._bucket.blob(gcs_path)
+        blob = self._get_bucket().blob(gcs_path)
         blob.upload_from_string(content, content_type="text/plain")
 
     def makedirs(self, path: str) -> None:
