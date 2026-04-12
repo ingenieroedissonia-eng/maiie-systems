@@ -177,34 +177,37 @@ def ejecutar_mision(request: MissionRequest):
 
             if USAR_PLANNER:
                 submisiones, resultados = planner_executor.ejecutar(sistema, request.orden, submisiones_previas=submisiones_iniciales, on_submision_done=_on_submision_done)
-                resultado  = resultados[-1] if resultados else None
+                resultado = resultados[-1] if resultados else None
             else:
                 submisiones = []
                 resultados = []
                 resultado = pipeline.ejecutar_mision(sistema, request.orden)
+
             _gcs_guardar(mission_id, {
-    "status": "done",
-    "aprobado": resultado.aprobado if resultado else False,
-    "iteracion": resultado.iteracion if resultado else None,
-    "observaciones": resultado.observaciones if resultado else "Sin resultado",
-    "logs": [],
-    "submissions": [
-        dict(s, status="done",
-             feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) and resultados[i].aprobado else None,
-             codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
-        for i, s in enumerate(submisiones)
-    ],
-    "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
-})
+                "status": "done",
+                "aprobado": resultado.aprobado if resultado else False,
+                "iteracion": resultado.iteracion if resultado else None,
+                "observaciones": resultado.observaciones if resultado else "Sin resultado",
+                "logs": [],
+                "submissions": [
+                    dict(s, status="done",
+                         feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) and resultados[i].aprobado else None,
+                         codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
+                    for i, s in enumerate(submisiones)
+                ],
+                "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
+            })
+
             if resultado and resultado.aprobado:
-            try:
-                from utils.github_publisher import GitHubPublisher
-                publisher = GitHubPublisher()
-                repo_path = resultado.repo_path
-                publisher.publicar_mision(mission_id=mission_id, repo_path=repo_path, descripcion=request.orden[:100])
-                logger.info('GitHub autopublish OK: ' + str(mission_id))
-            except Exception as _ge:
-                logger.warning('GitHub autopublish error: ' + str(_ge))
+                try:
+                    from utils.github_publisher import GitHubPublisher
+                    publisher = GitHubPublisher()
+                    repo_path = resultado.repo_path
+                    publisher.publicar_mision(mission_id=mission_id, repo_path=repo_path, descripcion=request.orden[:100])
+                    logger.info('GitHub autopublish OK: ' + str(mission_id))
+                except Exception as _ge:
+                    logger.warning('GitHub autopublish error: ' + str(_ge))
+
         except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
