@@ -232,7 +232,9 @@ class IterativePipeline:
 
 
 
-        if "pass" in codigo and codigo.count("pass") > 2:
+        lineas_pass = [l for l in codigo.split("
+") if l.strip() == "pass"]
+        if len(lineas_pass) > 3:
             return False, "Demasiados placeholders"
 
         lineas_ejecutables = []
