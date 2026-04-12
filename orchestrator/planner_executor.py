@@ -124,6 +124,9 @@ class PlannerExecutor:
                 orden_enriquecida = (
                     f"{sub['descripcion']}\n\n"
                     f"--- {plan_completo} ---\n\n"
+                    f"--- ARCHIVOS YA GENERADOS EN EL PROYECTO ---\n"
+                    f"{resumen_proyecto}\n\n"
+                    f"CRITICO: Si un archivo ya aparece en ARCHIVOS YA GENERADOS, NO lo recrees.\n"
                     f"Implementa SOLO lo que describe esta submision.\n"
                     f"Las capas posteriores se implementaran en submisiones siguientes.\n"
                 )
