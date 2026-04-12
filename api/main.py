@@ -196,6 +196,15 @@ def ejecutar_mision(request: MissionRequest):
     ],
     "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
 })
+        if resultado and resultado.aprobado:
+            try:
+                from utils.github_publisher import GitHubPublisher
+                publisher = GitHubPublisher()
+                repo_path = resultado.repo_path
+                publisher.publicar_mision(mission_id=mission_id, repo_path=repo_path, descripcion=request.orden[:100])
+                logger.info(f'''GitHub autopublish OK: {mission_id}''')
+            except Exception as _ge:
+                logger.warning(f'''GitHub autopublish error: {_ge}''')
         except Exception as e:
             _gcs_guardar(mission_id, {"status": "error", "aprobado": None, "iteracion": None, "observaciones": str(e), "logs": []})
 
