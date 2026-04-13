@@ -335,12 +335,32 @@ def publicar_sistema(request: PublishSistemaRequest):
 @app.get('/missions')
 def listar_misiones():
     from core.missions_store_gcs import listar as _gcs_listar
+    from utils.artifact_manager import MissionMemory
     ids = _gcs_listar()
     resultado = []
+    memory = MissionMemory()
     for mid in ids:
         data = _gcs_obtener(mid)
         if data:
-            resultado.append({'mission_id': mid, 'status': data.get('status'), 'aprobado': data.get('aprobado'), 'observaciones': data.get('observaciones')})
+            observaciones = data.get('observaciones') or ''
+            try:
+                observaciones = observaciones.encode('latin-1').decode('utf-8')
+            except Exception:
+                pass
+            orden_usuario = ''
+            try:
+                manifest = memory.cargar_manifest(mid)
+                if manifest:
+                    orden_usuario = manifest.get('orden_usuario', '')[:120]
+            except Exception:
+                pass
+            resultado.append({
+                'mission_id': mid,
+                'status': data.get('status'),
+                'aprobado': data.get('aprobado'),
+                'observaciones': observaciones,
+                'orden_usuario': orden_usuario,
+            })
     return {'missions': resultado}
 
 @app.get('/system/metrics')
