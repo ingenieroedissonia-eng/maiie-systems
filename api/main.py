@@ -153,7 +153,7 @@ def ejecutar_mision(request: MissionRequest):
             submisiones_iniciales = [{"id": s["id"], "descripcion": s["descripcion"], "status": "pending"} for s in subs_raw]
         except Exception:
             submisiones_iniciales = []
-    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": submisiones_iniciales})
+    _gcs_guardar(mission_id, {"status": "running", "aprobado": None, "iteracion": None, "observaciones": None, "logs": [], "submissions": submisiones_iniciales, "orden_usuario": request.orden[:120]})
 
     def _run():
         try:
@@ -335,10 +335,8 @@ def publicar_sistema(request: PublishSistemaRequest):
 @app.get('/missions')
 def listar_misiones():
     from core.missions_store_gcs import listar as _gcs_listar
-    from utils.artifact_manager import MissionMemory
     ids = _gcs_listar()
     resultado = []
-    memory = MissionMemory()
     for mid in ids:
         data = _gcs_obtener(mid)
         if data:
@@ -347,19 +345,12 @@ def listar_misiones():
                 observaciones = observaciones.encode('latin-1').decode('utf-8')
             except Exception:
                 pass
-            orden_usuario = ''
-            try:
-                manifest = memory.cargar_manifest(mid)
-                if manifest:
-                    orden_usuario = manifest.get('orden_usuario', '')[:120]
-            except Exception:
-                pass
             resultado.append({
                 'mission_id': mid,
                 'status': data.get('status'),
                 'aprobado': data.get('aprobado'),
                 'observaciones': observaciones,
-                'orden_usuario': orden_usuario,
+                'orden_usuario': data.get('orden_usuario', ''),
             })
     return {'missions': resultado}
 
