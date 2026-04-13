@@ -5,7 +5,7 @@ const W = 200; const H = 70;
 const COLS = 3; const COL_GAP = 260; const ROW_GAP = 160;
 const PAD_X = 20; const PAD_Y = 30;
 
-const buildLayout = (subs) => subs.map((sub, i) => {
+const buildLayout = (subs, dCols) => subs.map((sub, i) => {
   const text = sub.descripcion || '';
   const cut = text.slice(0, 40);
   const file = text.length > 40 ? (cut.slice(0, cut.lastIndexOf(' ') > 0 ? cut.lastIndexOf(' ') : 40)) + '...' : text;
@@ -13,9 +13,9 @@ const buildLayout = (subs) => subs.map((sub, i) => {
     id: sub.id, file, descripcion: sub.descripcion,
     feedback: sub.feedback || null, codigo: sub.codigo || null,
     status: sub.status || 'pending',
-    x: (i % COLS) * COL_GAP + PAD_X,
-    y: Math.floor(i / COLS) * ROW_GAP + PAD_Y,
-    col: i % COLS, row: Math.floor(i / COLS)
+    x: (i % dCols) * COL_GAP + PAD_X,
+    y: Math.floor(i / dCols) * ROW_GAP + PAD_Y,
+    col: i % dCols, row: Math.floor(i / dCols)
   };
 });
 
@@ -65,7 +65,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
         const isDone = data.status === 'done' || data.status === 'error';
         if (data.codigo_generado && onCodigoGenerado) onCodigoGenerado(data.codigo_generado);
         if (subs.length > 0) {
-          setNodes(buildLayout(isDone ? subs.map(s => ({ ...s, status: 'done' })) : subs));
+          const dc = Math.max(4, Math.ceil(subs.length / 2)); setNodes(buildLayout(isDone ? subs.map(s => ({ ...s, status: 'done' })) : subs, dc));
         }
         if (isDone) {
           setLoading(false);
@@ -86,8 +86,9 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     </div>
   );
 
-  const totalRows = nodes.length > 0 ? Math.ceil(nodes.length / COLS) : 1;
-  const canvasW = Math.max(800, COLS * COL_GAP + PAD_X * 2);
+  const dynamicCols = Math.max(4, Math.ceil(nodes.length / 2)); // test: canvasW forzado abajo
+  const totalRows = nodes.length > 0 ? Math.ceil(nodes.length / dynamicCols) : 1;
+  const canvasW = 3000;
   const canvasH = Math.max(400, totalRows * ROW_GAP + PAD_Y * 2 + H);
   const edges = buildEdges(nodes);
 
@@ -103,7 +104,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
         {nodes.length === 0 && !loading && <div className="graph-empty"><div className="ei">[ ]</div><p>Iniciando pipeline...</p></div>}
         {nodes.length === 0 && loading && <div className="graph-empty"><div className="ei">[ ]</div><p>Ejecutando pipeline...</p></div>}
         {nodes.length > 0 && (
-          <div style={{position:'relative',width:canvasW+'px',minHeight:canvasH+'px',minHeight:canvasH+'px',margin:'0 auto'}}>
+          <div style={{position:'relative',width:canvasW+'px',height:canvasH+'px'}}>
             <svg style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',overflow:'visible',pointerEvents:'none'}} viewBox={"0 0 "+canvasW+" "+canvasH}>
               <defs><marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 z" fill="#1e3050"/></marker></defs>
               {edges.map(e => e.bent

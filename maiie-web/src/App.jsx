@@ -107,8 +107,8 @@ function App() {
           systemStats={systemStats}
           allMissions={allMissions}
         />
-        {activeView === 'panel' && (
-          <>
+        <div className="main-content">
+          {activeView === 'panel' && (
             <GraphConsole
               missionStatus={missionStatus}
               missionId={missionId}
@@ -116,29 +116,28 @@ function App() {
               onSelectNode={setSelectedNode}
               onCodigoGenerado={setCodigoGenerado}
             />
-            <NodeDetailPanel selectedNode={selectedNode} missionStatus={missionStatus} codigoGenerado={codigoGenerado} />
-          </>
-        )}
-        {activeView === 'historial' && (
-          <div style={{flex:1,padding:'24px',overflowY:'auto'}}>
-            <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Historial de Misiones</div>
-            <HistorialView missions={allMissions} />
-          </div>
-        )}
-        {activeView === 'memoria' && (
-          <div style={{flex:1,padding:'24px',overflowY:'auto'}}>
-            <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Memoria Semantica</div>
-            <MemoriaView systemStats={systemStats} />
-          </div>
-        )}
-        {activeView === 'config' && (
-          <div style={{flex:1,padding:'24px',overflowY:'auto'}}>
-            <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Configuracion del Sistema</div>
-            <ConfigView />
-          </div>
-        )}
+          )}
+          {activeView === 'historial' && (
+            <div className="main-scroll">
+              <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Historial de Misiones</div>
+              <HistorialView missions={allMissions} />
+            </div>
+          )}
+          {activeView === 'memoria' && (
+            <div className="main-scroll">
+              <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Memoria Semantica</div>
+              <MemoriaView systemStats={systemStats} />
+            </div>
+          )}
+          {activeView === 'config' && (
+            <div className="main-scroll">
+              <div style={{fontSize:'0.7rem',color:'var(--text-dim)',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'16px'}}>Configuracion del Sistema</div>
+              <ConfigView />
+            </div>
+          )}
+        </div>
+        {activeView === 'panel' && <NodeDetailPanel selectedNode={selectedNode} missionStatus={missionStatus} codigoGenerado={codigoGenerado} />}
       </div>
-
       <div className="statusbar">
         <span><span className="dot" />MAIIE Core API v2.3.0</span>
         <span>missions_store: GCS</span>

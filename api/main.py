@@ -205,7 +205,7 @@ def ejecutar_mision(request: MissionRequest):
                     publisher = GitHubPublisher()
                     if resultado.repo_path:
                         pipeline_mission_id = resultado.repo_path.replace('\\', '/').rstrip('/').split('/')[-1]
-                        publisher.publicar_mision(mission_id=pipeline_mission_id, descripcion=request.orden[:100])
+                        publisher.publicar_mision(mission_id=pipeline_mission_id, descripcion=request.orden)
                         logger.info('GitHub autopublish OK: ' + str(pipeline_mission_id))
                     else:
                         logger.warning('GitHub autopublish: repo_path no disponible')
@@ -345,10 +345,7 @@ def listar_misiones():
         data = _gcs_obtener(mid)
         if data:
             observaciones = data.get('observaciones') or ''
-            try:
-                observaciones = observaciones.encode('latin-1').decode('utf-8')
-            except Exception:
-                pass
+            observaciones = observaciones or ''
             resultado.append({
                 'mission_id': mid,
                 'status': data.get('status'),
