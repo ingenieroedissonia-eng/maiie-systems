@@ -203,7 +203,7 @@ def ejecutar_mision(request: MissionRequest):
                     from utils.github_publisher import GitHubPublisher
                     publisher = GitHubPublisher()
                     repo_path = resultado.repo_path
-                    publisher.publicar_mision(mission_id=mission_id, repo_path=repo_path, descripcion=request.orden[:100])
+                    publisher.publicar_mision(mission_id=mission_id, descripcion=request.orden[:100])
                     logger.info('GitHub autopublish OK: ' + str(mission_id))
                 except Exception as _ge:
                     logger.warning('GitHub autopublish error: ' + str(_ge))
