@@ -124,4 +124,3 @@ const NodeDetailPanel = ({ selectedNode, missionStatus, codigoGenerado }) => {
 
 
 export default NodeDetailPanel;
-
