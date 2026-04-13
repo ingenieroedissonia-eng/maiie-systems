@@ -35,6 +35,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger("MAIIE.Main")
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
