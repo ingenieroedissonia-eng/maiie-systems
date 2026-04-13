@@ -75,9 +75,21 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     };
 
     poll();
-    pollRef.current = setInterval(poll, 3000);
+    const intervalTime = done ? 8000 : 3000;
+    pollRef.current = setInterval(poll, intervalTime);
     return () => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
   }, [missionId]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
 
   if (!missionId) return (
     <div className="graph-area">
