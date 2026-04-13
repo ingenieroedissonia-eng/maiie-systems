@@ -203,9 +203,12 @@ def ejecutar_mision(request: MissionRequest):
                 try:
                     from utils.github_publisher import GitHubPublisher
                     publisher = GitHubPublisher()
-                    repo_path = resultado.repo_path
-                    publisher.publicar_mision(mission_id=mission_id, descripcion=request.orden[:100])
-                    logger.info('GitHub autopublish OK: ' + str(mission_id))
+                    if resultado.repo_path:
+                        pipeline_mission_id = resultado.repo_path.replace('\\', '/').rstrip('/').split('/')[-1]
+                        publisher.publicar_mision(mission_id=pipeline_mission_id, descripcion=request.orden[:100])
+                        logger.info('GitHub autopublish OK: ' + str(pipeline_mission_id))
+                    else:
+                        logger.warning('GitHub autopublish: repo_path no disponible')
                 except Exception as _ge:
                     logger.warning('GitHub autopublish error: ' + str(_ge))
 
