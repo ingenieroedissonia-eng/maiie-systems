@@ -198,8 +198,9 @@ function HistorialView({ missions: propMissions }) {
             <span style={{fontFamily:'monospace',fontSize:'0.75rem',color:'var(--accent)'}}>{m.mission_id}</span>
             <span className={"badge " + (m.status === 'done' ? 'success' : m.status === 'error' ? 'retrying' : 'running')}>{m.status?.toUpperCase()}</span>
           </div>
+          {m.orden_usuario && <div style={{fontSize:'0.72rem',color:'var(--text)',marginBottom:'6px',lineHeight:'1.4'}}>{m.orden_usuario}</div>}
           <div style={{display:'flex',gap:'16px',fontSize:'0.7rem',color:'var(--text-dim)'}}>
-            <span>Aprobado: <span style={{color: m.aprobado ? 'var(--green)' : 'var(--text-dim)'}}>{m.aprobado ? 'SI' : m.aprobado === false ? 'NO' : '—'}</span></span>
+            <span>Aprobado: <span style={{color: m.aprobado ? 'var(--green)' : 'var(--red)'}}>{m.aprobado ? 'SI' : m.aprobado === false ? 'NO' : '—'}</span></span>
           </div>
           {m.observaciones && <div style={{marginTop:'6px',fontSize:'0.68rem',color:'var(--text-dim)',borderTop:'1px solid var(--border)',paddingTop:'6px'}}>{m.observaciones}</div>}
         </div>
