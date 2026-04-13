@@ -20,7 +20,7 @@
   --sb-w: 255px;
   --det-w: 290px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}#root{height:100%;display:flex;flex-direction:column;flex:1;}*{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;overflow:hidden;height:100dvh;display:flex;flex-direction:column;}
 .app-header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var(--sb-bg);border-bottom:1px solid var(--border);height:54px;flex-shrink:0;}
 .logo{width:30px;height:30px;border:2px solid var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent);}
