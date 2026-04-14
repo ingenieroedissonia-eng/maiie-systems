@@ -94,7 +94,20 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
 
         if (data.codigo_generado && onCodigoGenerado) onCodigoGenerado(data.codigo_generado);
 
-        renderSubs(subs);
+        const dc2 = Math.max(4, Math.ceil((subs.length || 1) / 2));
+        const next = buildLayout(subs, dc2);
+        setNodes(prev => {
+          if (prev.length !== next.length) return next;
+          for (let i = 0; i < prev.length; i++) {
+            if (prev[i].status !== next[i].status ||
+                prev[i].feedback !== next[i].feedback ||
+                prev[i].codigo !== next[i].codigo) {
+              return next;
+            }
+          }
+          return prev;
+        });
+        setLoading(false);
 
         const isDone = data.status === 'done' || data.status === 'completed' || data.status === 'error';
 
