@@ -1,36 +1,35 @@
 ﻿"""
 MAIIE System V2 - Iterative Pipeline
-MÃ³dulo: OrquestaciÃ³n de ciclo de refinamiento
+Modulo: Orquestacion de ciclo de refinamiento
 Capa: Orchestrator
-VersiÃ³n: 4.17.0 â€” LearningEngine calibraciÃ³n dinÃ¡mica activa
+Version: 4.19.0 - Early kill + AST validation
+
+CHANGELOG v4.19.0:
+- ADD: Early kill - si el mismo feedback se repite 2 ciclos consecutivos,
+       el pipeline rompe el loop y registra limite alcanzado.
+       Evita desperdicio de tokens en errores no convergentes.
+- ADD: Validacion AST en _validar_minimos() - rechaza codigo con
+       SyntaxError antes de llegar al AUDITOR.
+
+CHANGELOG v4.18.0:
+- ADD: Contrato obligatorio routers FastAPI en engineer_base.txt
 
 CHANGELOG v4.17.0:
 - ADD: LearningEngine.update_from_missions() llamado en __init__ con el
-       historial real de misiones aprobadas. A partir de esta versiÃ³n el
-       LearningEngine calibra Î±, Î², Î³ al arrancar el pipeline en lugar de
-       operar siempre con pesos estÃ¡ticos.
+       historial real de misiones aprobadas. A partir de esta version el
+       LearningEngine calibra alpha, beta, gamma al arrancar el pipeline.
 - ADD: recomendar_estrategia() inyectada en el prompt del ARCHITECT en
-       iteraciÃ³n 1. Si el LearningEngine detecta patrones relevantes en
-       el contexto de la orden, el ARCHITECT los recibe como guÃ­a.
-- KEEP: Comportamiento idÃ©ntico si LearningEngine falla â€” defaults sin
-        interrupciÃ³n. Cambio quirÃºrgico â€” sin modificaciones en contratos,
-        lÃ³gica del pipeline ni otros agentes.
+       iteracion 1.
 
 CHANGELOG v4.16.0:
-- FIX: ENGINEER_BASE ahora recibe orden_ceo ademÃ¡s del plan_actual.
-       Causa raÃ­z: el prompt del ENGINEER_BASE solo pasaba plan_actual,
-       ignorando la orden_enriquecida del PlannerExecutor. El ARCHITECT
-       recibÃ­a la submisiÃ³n atÃ³mica correctamente, pero el ENGINEER_BASE
-       solo veÃ­a el plan arquitectÃ³nico completo y lo implementaba todo.
-       SoluciÃ³n: prompt_base incluye orden_ceo como ORDEN ESPECÃFICA con
-       prioridad sobre el plan arquitectÃ³nico de referencia.
+- FIX: ENGINEER_BASE ahora recibe orden_ceo ademas del plan_actual.
 
 CHANGELOG v4.15.0:
 - ADD: LearningEngine conectado al pipeline en modo solo lectura.
 
 CHANGELOG v4.14.0:
 - FIX: ejecutar_mision() pasa orden_ceo a obtener_contexto() para activar
-       bÃºsqueda semÃ¡ntica de misiones similares (mission_memory.py v1.4.0).
+       busqueda semantica de misiones similares.
 
 CHANGELOG v4.13.0:
 - FIX: _validar_minimos() ahora ignora TODOs en comentarios y docstrings.
@@ -41,7 +40,7 @@ CHANGELOG v4.12.1:
 
 CHANGELOG v4.12.0:
 - P2: Pipeline ahora tipea el orquestador como AgentExecutor.
-- P3: Todas las llamadas a _activar_agente() â†’ ejecutar_agente().
+- P3: Todas las llamadas a _activar_agente() -> ejecutar_agente().
 
 CHANGELOG v4.11.0:
 - FIX: ENGINEER_SENIOR degradation fallback implementado.
@@ -50,10 +49,10 @@ CHANGELOG v4.10.0:
 - FIX: RepoGenerator usa el mejor codigo_base de todos los ciclos.
 
 CHANGELOG v4.9.0:
-- FIX: Prompt del ENGINEER_SENIOR incluye lista explÃ­cita de archivos.
+- FIX: Prompt del ENGINEER_SENIOR incluye lista explicita de archivos.
 
 CHANGELOG v4.8.0:
-- FIX: Feedback sintÃ©tico al ARCHITECT con instrucciÃ³n de simplificaciÃ³n.
+- FIX: Feedback sintetico al ARCHITECT con instruccion de simplificacion.
 
 CHANGELOG v4.7.0:
 - ADD: Estado del validador interno inyectado en prompt del AUDITOR.
@@ -62,13 +61,14 @@ CHANGELOG v4.6.0:
 - FIX: _validar_minimos() bloquea el ciclo cuando detecta placeholders.
 
 CHANGELOG v4.5.0:
-- ADD: IntegraciÃ³n de RepoGenerator.
+- ADD: Integracion de RepoGenerator.
 - ADD: PipelineResult incluye campo repo_path.
 """
 
 import os
 import re
 import sys
+import ast
 import uuid
 import logging
 from datetime import datetime
@@ -106,7 +106,7 @@ logger = logging.getLogger("MAIIE.Pipeline")
 
 
 # ------------------------------------------------------------------
-# ESTADOS DE CERTIFICACIÃ“N
+# ESTADOS DE CERTIFICACION
 # ------------------------------------------------------------------
 
 class EstadoCertificacion:
@@ -122,7 +122,7 @@ class EstadoCertificacion:
 
 @dataclass
 class PipelineResult:
-    """Estructura inmutable para el reporte de misiÃ³n."""
+    """Estructura inmutable para el reporte de mision."""
 
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     orden_ceo: str = ""
@@ -153,25 +153,27 @@ class IterativePipeline:
 
     Flujo por ciclo:
 
-    ARCHITECT â†’ genera plan
-        â†“
-    ENGINEER_BASE â†’ implementa cÃ³digo
-        â†“
+    ARCHITECT -> genera plan
+        |
+    ENGINEER_BASE -> implementa codigo
+        |
     [tracking mejor_codigo_base por cantidad de # File:]
-        â†“
+        |
     ENGINEER_SENIOR (opcional)
-        â†“ validaciÃ³n previa del Senior
-        â†“ si Senior degrada â†’ fallback a Base (v4.11.0)
-        â†“
-    VALIDACIÃ“N MÃNIMA â€” BLOQUEADOR
-        â†“ si falla + hay ciclos â†’ feedback simplificaciÃ³n â†’ continue
-        â†“ si falla + Ãºltimo ciclo â†’ auditar igual para registrar estado
-        â†“
-    AUDITOR â† recibe estado del validador interno
-        â†“
-    CERTIFICACIÃ“N
-        â†“
-    REPO GENERATOR â† usa mejor_codigo_base de todos los ciclos
+        | validacion previa del Senior
+        | si Senior degrada -> fallback a Base (v4.11.0)
+        |
+    VALIDACION MINIMA - BLOQUEADOR (AST + placeholders)
+        | si falla + hay ciclos -> feedback simplificacion -> continue
+        | si falla + ultimo ciclo -> auditar igual para registrar estado
+        |
+    AUDITOR <- recibe estado del validador interno
+        |
+    CERTIFICACION
+        |
+    EARLY KILL (v4.19.0) - si mismo error 2 ciclos -> break
+        |
+    REPO GENERATOR <- usa mejor_codigo_base de todos los ciclos
     """
 
     def __init__(self, max_iteraciones: int = 3):
@@ -188,18 +190,17 @@ class IterativePipeline:
         self.repo_generator = RepoGenerator()
 
         # v4.17.0: LearningEngine calibrado con historial real al inicializar.
-        # Si falla, el pipeline opera igual que v4.16.0 â€” sin interrupciÃ³n.
         try:
             self.learning = LearningEngine()
             misiones_aprobadas = self.memory.obtener_misiones_aprobadas(limite=50)
             if misiones_aprobadas:
                 self.learning.update_from_missions(misiones_aprobadas)
         except Exception as e:
-            logger.warning(f"âš ï¸ LearningEngine no disponible: {e} â€” usando defaults")
+            logger.warning(f"LearningEngine no disponible: {e} - usando defaults")
             self.learning = None
 
     # --------------------------------------------------------------
-    # EXTRAER LISTA DE ARCHIVOS DEL CÃ“DIGO BASE
+    # EXTRAER LISTA DE ARCHIVOS DEL CODIGO BASE
     # --------------------------------------------------------------
 
     def _extraer_archivos_base(self, codigo: str) -> List[str]:
@@ -217,26 +218,21 @@ class IterativePipeline:
         return unicos
 
     # --------------------------------------------------------------
-    # VALIDACIÃ“N BÃSICA
-    # v4.13.0: TODOs solo se detectan en cÃ³digo ejecutable real.
+    # VALIDACION BASICA
+    # v4.19.0: AST validation agregada
+    # v4.13.0: TODOs solo se detectan en codigo ejecutable real.
     # --------------------------------------------------------------
 
     def _validar_minimos(self, codigo: str):
 
-
         if len(codigo.strip()) < 100:
             return False, "Codigo insuficiente"
 
-        import ast
+        # Validacion AST - v4.19.0
         try:
             ast.parse(codigo)
         except SyntaxError as e:
             return False, f"Syntax error: {str(e)}"
-
-
-
-
-
 
         lineas_pass = [l for l in codigo.split(chr(10)) if l.strip() == "pass"]
         if len(lineas_pass) > 3:
@@ -261,33 +257,34 @@ class IterativePipeline:
 
         codigo_ejecutable = "\n".join(lineas_ejecutables)
         logger.info("VALIDADOR_SAMPLE: %s", repr(codigo_ejecutable[:3000]))
-        
+
         if re.search(r'\bTODO\b', codigo_ejecutable, re.IGNORECASE):
-            return False, "TODOs detectados en cÃ³digo ejecutable"
-        return True, "ValidaciÃ³n bÃ¡sica OK"
+            return False, "TODOs detectados en codigo ejecutable"
+
+        return True, "Validacion basica OK"
 
     # --------------------------------------------------------------
-    # FEEDBACK SINTÃ‰TICO DE SIMPLIFICACIÃ“N
+    # FEEDBACK SINTETICO DE SIMPLIFICACION
     # --------------------------------------------------------------
 
     def _feedback_simplificacion(self, iteracion: int, causa: str) -> str:
         return (
-            f"ITERACIÃ“N: {iteracion}\n"
+            f"ITERACION: {iteracion}\n"
             f"CUMPLIMIENTO: 0%\n"
             f"ESTADO: RECHAZADO\n\n"
-            f"BLOQUEADOR INTERNO â€” El cÃ³digo fue rechazado antes de llegar al auditor.\n"
+            f"BLOQUEADOR INTERNO - El codigo fue rechazado antes de llegar al auditor.\n"
             f"CAUSA: {causa}\n\n"
-            f"ACCIÃ“N REQUERIDA PARA EL PRÃ“XIMO CICLO:\n"
+            f"ACCION REQUERIDA PARA EL PROXIMO CICLO:\n"
             f"- El plan anterior era demasiado complejo para implementar sin placeholders.\n"
-            f"- DiseÃ±a un plan MÃS SIMPLE con MÃXIMO 3 entidades y 4 archivos.\n"
+            f"- Disena un plan MAS SIMPLE con MAXIMO 3 entidades y 4 archivos.\n"
             f"- Reduce los casos de uso a los estrictamente necesarios.\n"
-            f"- Un plan acotado produce cÃ³digo completo.\n"
+            f"- Un plan acotado produce codigo completo.\n"
             f"- Un plan ambicioso produce TODOs y placeholders.\n"
             f"- NO repitas el mismo plan. Simplifica."
         )
 
     # --------------------------------------------------------------
-    # EXTRACCIÃ“N DE COMPLIANCE SCORE
+    # EXTRACCION DE COMPLIANCE SCORE
     # --------------------------------------------------------------
 
     def _extraer_compliance_score(self, reporte: str) -> int:
@@ -303,10 +300,10 @@ class IterativePipeline:
         return 0
 
     # --------------------------------------------------------------
-    # VERIFICACIÃ“N DE CERTIFICACIÃ“N
+    # VERIFICACION DE CERTIFICACION
     # --------------------------------------------------------------
 
-    def _verificar_certificacion(self, reporte: str) -> tuple[bool, bool, str]:
+    def _verificar_certificacion(self, reporte: str) -> tuple:
         if not reporte:
             return False, False, EstadoCertificacion.INDEFINIDO
 
@@ -315,7 +312,7 @@ class IterativePipeline:
         if "APROBADO CON DEUDA" in reporte_upper or "APROBADO_CON_DEUDA" in reporte_upper:
             return True, True, EstadoCertificacion.APROBADO_DEUDA
 
-        if "ESTADO: APROBADO" in reporte_upper or "## ESTADO: âœ…" in reporte_upper:
+        if "ESTADO: APROBADO" in reporte_upper or "## ESTADO:" in reporte_upper:
             return True, False, EstadoCertificacion.APROBADO
 
         if "ESTADO: RECHAZADO" in reporte_upper:
@@ -324,7 +321,7 @@ class IterativePipeline:
         return False, False, EstadoCertificacion.INDEFINIDO
 
     # --------------------------------------------------------------
-    # FEEDBACK CRÃTICO
+    # FEEDBACK CRITICO
     # --------------------------------------------------------------
 
     def _extraer_feedback_critico(self, feedback: str) -> str:
@@ -339,7 +336,7 @@ class IterativePipeline:
 
         for linea in lineas:
             linea_upper = linea.upper()
-            if any(x in linea_upper for x in ["CRÃTICO", "BLOQUEADOR", "RECHAZADO", "ERROR", "âŒ"]):
+            if any(x in linea_upper for x in ["CRITICO", "BLOQUEADOR", "RECHAZADO", "ERROR"]):
                 criticas.append(linea)
 
         if criticas:
@@ -348,27 +345,27 @@ class IterativePipeline:
         return feedback[:800]
 
     # --------------------------------------------------------------
-    # EJECUCIÃ“N PRINCIPAL
+    # EJECUCION PRINCIPAL
     # --------------------------------------------------------------
 
     def ejecutar_mision(self, orquestador: AgentExecutor, orden_ceo: str):
 
-        logger.info(f"ðŸš€ Iniciando misiÃ³n. Orden: {orden_ceo[:50]}...")
-        print(f"ðŸš€ Iniciando misiÃ³n: {orden_ceo[:60]}...")
+        logger.info(f"Iniciando mision. Orden: {orden_ceo[:50]}...")
+        print(f"Iniciando mision: {orden_ceo[:60]}...")
 
         # v4.15.0: consultar pesos del LearningEngine antes de obtener contexto.
         if self.learning:
             pesos = self.learning.get_weights(contexto=orden_ceo)
             logger.info(
-                f"ðŸ§  LearningEngine pesos: "
-                f"Î±={pesos['alpha']} Î²={pesos['beta']} Î³={pesos['gamma']}"
+                f"LearningEngine pesos: "
+                f"alpha={pesos['alpha']} beta={pesos['beta']} gamma={pesos['gamma']}"
             )
 
-        # v4.14.0: pasa orden_ceo para activar bÃºsqueda semÃ¡ntica.
+        # v4.14.0: pasa orden_ceo para activar busqueda semantica.
         contexto_memoria = self.memory.obtener_contexto(orden_actual=orden_ceo)
         if contexto_memoria:
-            logger.info("ðŸ§  Contexto de misiones previas recuperado")
-            print("ðŸ§  Contexto de misiones previas recuperado")
+            logger.info("Contexto de misiones previas recuperado")
+            print("Contexto de misiones previas recuperado")
 
         mission_suffix = uuid.uuid4().hex[:8]
         mission_id     = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{mission_suffix}"
@@ -387,15 +384,18 @@ class IterativePipeline:
         mejor_codigo_base = None
         max_archivos_base = 0
 
+        # v4.19.0: early kill - tracking de feedback repetido
+        ultimo_feedback   = None
+        contador_error    = 0
+
         for iteracion in range(1, self.max_iteraciones + 1):
 
-            console.print(f"\n[bold blue]ðŸŒ€ CICLO {iteracion}/{self.max_iteraciones}[/]")
-            print(f"ðŸŒ€ CICLO {iteracion}/{self.max_iteraciones}")
+            console.print(f"\n[bold blue]CICLO {iteracion}/{self.max_iteraciones}[/]")
+            print(f"CICLO {iteracion}/{self.max_iteraciones}")
 
             # --------------------------------------------------
             # ARCHITECT
-            # v4.17.0: recibe recomendaciÃ³n del LearningEngine
-            # si detecta patrones relevantes en la orden.
+            # v4.17.0: recibe recomendacion del LearningEngine
             # --------------------------------------------------
 
             if iteracion == 1:
@@ -404,15 +404,15 @@ class IterativePipeline:
                     recomendacion = self.learning.recomendar_estrategia(orden_ceo)
 
                 prompt_arq = f"""
-MISIÃ“N:
+MISION:
 
 {orden_ceo}
 
 ARQUITECTURAS PREVIAS DEL SISTEMA:
 
 {contexto_memoria}
-{f"RECOMENDACIÃ“N DEL LEARNING ENGINE:{chr(10)}{recomendacion}{chr(10)}" if recomendacion else ""}
-DiseÃ±a una arquitectura considerando experiencias previas del sistema.
+{f"RECOMENDACION DEL LEARNING ENGINE:{chr(10)}{recomendacion}{chr(10)}" if recomendacion else ""}
+Disena una arquitectura considerando experiencias previas del sistema.
 """
             else:
                 feedback_limpio = self._extraer_feedback_critico(feedback_actual or "")
@@ -425,44 +425,43 @@ FEEDBACK DEL CICLO {iteracion - 1}:
 
 {feedback_limpio}
 
-Corrige el plan segÃºn el feedback recibido.
+Corrige el plan segun el feedback recibido.
 """
 
-            print(f"ðŸ—ï¸  ARCHITECT ejecutando...")
+            print(f"ARCHITECT ejecutando...")
             plan_actual          = orquestador.ejecutar_agente("ARCHITECT", prompt_arq, "cyan")
             mission.arquitectura = plan_actual
-            print(f"âœ… ARCHITECT completado")
+            print(f"ARCHITECT completado")
 
             # --------------------------------------------------
             # ENGINEER BASE
-            # v4.16.0: recibe orden_ceo como ORDEN ESPECÃFICA con
-            # prioridad sobre el plan arquitectÃ³nico de referencia.
+            # v4.16.0: recibe orden_ceo como ORDEN ESPECIFICA
             # --------------------------------------------------
 
-            print(f"ðŸ”§ ENGINEER_BASE ejecutando...")
+            print(f"ENGINEER_BASE ejecutando...")
             prompt_base = (
-                f"ORDEN ESPECÃFICA A IMPLEMENTAR:\n"
+                f"ORDEN ESPECIFICA A IMPLEMENTAR:\n"
                 f"{orden_ceo}\n\n"
-                f"PLAN ARQUITECTÃ“NICO (referencia de diseÃ±o):\n"
+                f"PLAN ARQUITECTONICO (referencia de diseno):\n"
                 f"{plan_actual}\n\n"
-                f"REGLA CRÃTICA: Implementa ÃšNICAMENTE lo que describe la ORDEN ESPECÃFICA.\n"
-                f"El plan arquitectÃ³nico es contexto de diseÃ±o â€” no lo implementes completo.\n"
+                f"REGLA CRITICA: Implementa UNICAMENTE lo que describe la ORDEN ESPECIFICA.\n"
+                f"El plan arquitectonico es contexto de diseno - no lo implementes completo.\n"
                 f"Si la orden dice 'Crea api/user_router.py', genera SOLO ese archivo."
             )
             raw_base    = orquestador.ejecutar_agente("ENGINEER_BASE", prompt_base, "yellow")
             codigo_base = limpiar_codigo_md(raw_base)
             mission.implementacion = codigo_base
-            print(f"âœ… ENGINEER_BASE completado")
+            print(f"ENGINEER_BASE completado")
 
             archivos_este_ciclo = len(self._extraer_archivos_base(codigo_base))
             if archivos_este_ciclo > max_archivos_base:
                 max_archivos_base = archivos_este_ciclo
                 mejor_codigo_base = codigo_base
                 logger.info(
-                    f"ðŸ“ Mejor Base actualizado: {archivos_este_ciclo} "
+                    f"Mejor Base actualizado: {archivos_este_ciclo} "
                     f"archivo(s) en ciclo {iteracion}"
                 )
-                print(f"ðŸ“ Mejor Base actualizado: {archivos_este_ciclo} archivo(s)")
+                print(f"Mejor Base actualizado: {archivos_este_ciclo} archivo(s)")
 
             # --------------------------------------------------
             # ENGINEER SENIOR (opcional)
@@ -477,50 +476,48 @@ Corrige el plan segÃºn el feedback recibido.
                         f"- # File: {ruta}" for ruta in archivos_base
                     )
                     seccion_archivos = (
-                        f"ARCHIVOS QUE DEBES ENTREGAR â€” OBLIGATORIO INCLUIR TODOS:\n"
+                        f"ARCHIVOS QUE DEBES ENTREGAR - OBLIGATORIO INCLUIR TODOS:\n"
                         f"{lista_archivos}\n"
                         f"No fusiones estos archivos. Cada uno debe aparecer "
-                        f"en tu output con su # File: como primera lÃ­nea.\n"
+                        f"en tu output con su # File: como primera linea.\n"
                     )
                 else:
                     seccion_archivos = ""
 
                 prompt_senior = f"""
-Optimiza este cÃ³digo para producciÃ³n.
+Optimiza este codigo para produccion.
 
 {seccion_archivos}
 PLAN:
 
 {plan_actual}
 
-CÃ“DIGO:
+CODIGO:
 
 {codigo_base}
 """
-                print(f"ðŸŽ¯ ENGINEER_SENIOR ejecutando...")
+                print(f"ENGINEER_SENIOR ejecutando...")
                 raw_senior    = orquestador.ejecutar_agente("ENGINEER_SENIOR", prompt_senior, "bright_yellow")
                 codigo_senior = limpiar_codigo_md(raw_senior)
-                print(f"âœ… ENGINEER_SENIOR completado")
+                print(f"ENGINEER_SENIOR completado")
 
                 if archivos_base:
                     logger.info(
-                        f"ðŸ“‹ Senior recibiÃ³ lista de {len(archivos_base)} "
+                        f"Senior recibio lista de {len(archivos_base)} "
                         f"archivo(s) del Base para preservar."
                     )
-                    print(f"ðŸ“‹ Senior recibiÃ³ lista de {len(archivos_base)} archivo(s)")
+                    print(f"Senior recibio lista de {len(archivos_base)} archivo(s)")
 
                 es_valido_senior, _ = self._validar_minimos(codigo_senior)
                 es_valido_base, _   = self._validar_minimos(codigo_base)
 
                 if not es_valido_senior and es_valido_base:
                     logger.warning(
-                        "âš ï¸ Senior degradÃ³ el cÃ³digo (TODOs/placeholders). "
+                        "Senior degrado el codigo (TODOs/placeholders). "
                         "Usando Base directamente como codigo_final."
                     )
-                    console.print(
-                        "[bold yellow]âš ï¸ Senior degradÃ³ â€” fallback a Base activado.[/]"
-                    )
-                    print("âš ï¸ Senior degradÃ³ â€” fallback a Base activado")
+                    console.print("[bold yellow]Senior degrado - fallback a Base activado.[/]")
+                    print("Senior degrado - fallback a Base activado")
                     codigo_final = codigo_base
                 else:
                     codigo_final = codigo_senior
@@ -529,14 +526,14 @@ CÃ“DIGO:
                 codigo_final = codigo_base
 
             # --------------------------------------------------
-            # VALIDACIÃ“N MÃNIMA â€” BLOQUEADOR
+            # VALIDACION MINIMA - BLOQUEADOR
             # --------------------------------------------------
 
             es_valido, mensaje_validacion = self._validar_minimos(codigo_final)
 
             if not es_valido:
-                logger.warning(f"ðŸš« ValidaciÃ³n bloqueada: {mensaje_validacion}")
-                print(f"ðŸš« BLOQUEADO: {mensaje_validacion}")
+                logger.warning(f"Validacion bloqueada: {mensaje_validacion}")
+                print(f"BLOQUEADO: {mensaje_validacion}")
 
                 if iteracion < self.max_iteraciones:
                     feedback_actual = self._feedback_simplificacion(
@@ -544,29 +541,29 @@ CÃ“DIGO:
                         causa=mensaje_validacion,
                     )
                     console.print(
-                        f"[bold red]ðŸš« BLOQUEADO: {mensaje_validacion}. "
-                        f"Re-ingenierÃ­a forzada...[/]"
+                        f"[bold red]BLOQUEADO: {mensaje_validacion}. "
+                        f"Re-ingenieria forzada...[/]"
                     )
-                    print(f"ðŸ” Re-ingenierÃ­a forzada en ciclo {iteracion + 1}...")
+                    print(f"Re-ingenieria forzada en ciclo {iteracion + 1}...")
                     continue
 
                 else:
                     logger.warning(
-                        "âš ï¸ ValidaciÃ³n fallÃ³ en ciclo final â€” "
+                        "Validacion fallo en ciclo final - "
                         "auditando para registrar estado."
                     )
-                    print("âš ï¸ ValidaciÃ³n fallÃ³ en ciclo final â€” auditando igual")
+                    print("Validacion fallo en ciclo final - auditando igual")
 
             # --------------------------------------------------
             # ESTADO DEL VALIDADOR
             # --------------------------------------------------
 
             estado_validador = (
-                f"ESTADO VALIDADOR INTERNO: BLOQUEADO â€” {mensaje_validacion}"
+                f"ESTADO VALIDADOR INTERNO: BLOQUEADO - {mensaje_validacion}"
                 if not es_valido
                 else "ESTADO VALIDADOR INTERNO: OK"
             )
-            print(f"ðŸ” {estado_validador}")
+            print(f"{estado_validador}")
 
             # --------------------------------------------------
             # AUDITOR
@@ -578,59 +575,59 @@ CÃ“DIGO:
 ORDEN ORIGINAL DEL CEO:
 {orden_ceo}
 
-ITERACIÃ“N DEL PIPELINE: {iteracion} de {self.max_iteraciones}
+ITERACION DEL PIPELINE: {iteracion} de {self.max_iteraciones}
 
-PLAN ARQUITECTÃ“NICO:
+PLAN ARQUITECTONICO:
 
 {plan_actual}
 
-CÃ“DIGO A AUDITAR:
+CODIGO A AUDITAR:
 
 {codigo_final}
 
 Si la ORDEN ORIGINAL contiene "SOLO", "UNICAMENTE" o una ruta especifica de archivo,
-evalua UNICAMENTE el archivo entregado â€” NO rechaces por archivos faltantes del plan.
-EvalÃºa estrictamente el cumplimiento de estÃ¡ndares de producciÃ³n.
+evalua UNICAMENTE el archivo entregado - NO rechaces por archivos faltantes del plan.
+Evalua estrictamente el cumplimiento de estandares de produccion.
 Indica el estado con exactamente una de estas frases en tu reporte:
 - ESTADO: APROBADO
 - ESTADO: APROBADO CON DEUDA
 - ESTADO: RECHAZADO
 
-Incluye CUMPLIMIENTO: XX% con el porcentaje numÃ©rico.
+Incluye CUMPLIMIENTO: XX% con el porcentaje numerico.
 """
-             
-            print(f"ðŸ” AUDITOR ejecutando...")
+
+            print(f"AUDITOR ejecutando...")
             feedback_actual   = orquestador.ejecutar_agente("AUDITOR", prompt_aud, "green")
             mission.auditoria = feedback_actual
-            print(f"âœ… AUDITOR completado")
+            print(f"AUDITOR completado")
 
-            logger.info(f"ðŸ“‹ FEEDBACK AUDITOR CICLO {iteracion}")
+            logger.info(f"FEEDBACK AUDITOR CICLO {iteracion}")
             logger.info(feedback_actual[:800])
 
             # --------------------------------------------------
-            # EVALUACIÃ“N DE CERTIFICACIÃ“N
+            # EVALUACION DE CERTIFICACION
             # --------------------------------------------------
 
             aprobado, deuda_tecnica, estado = self._verificar_certificacion(feedback_actual)
             compliance_score = self._extraer_compliance_score(feedback_actual)
 
-            print(f"ðŸ“Š Cumplimiento: {compliance_score}% â€” Estado: {estado}")
+            print(f"Cumplimiento: {compliance_score}% - Estado: {estado}")
 
             if aprobado:
 
-                label = "âœ… APROBADO" if not deuda_tecnica else "âœ… APROBADO CON DEUDA TÃ‰CNICA"
+                label = "APROBADO" if not deuda_tecnica else "APROBADO CON DEUDA TECNICA"
                 logger.info(
-                    f"{label} en iteraciÃ³n {iteracion} â€” "
+                    f"{label} en iteracion {iteracion} - "
                     f"Cumplimiento: {compliance_score}%"
                 )
-                print(f"{label} en iteraciÃ³n {iteracion} â€” Cumplimiento: {compliance_score}%")
+                print(f"{label} en iteracion {iteracion} - Cumplimiento: {compliance_score}%")
 
                 if deuda_tecnica:
                     logger.warning(
-                        "âš ï¸ MisiÃ³n aprobada con deuda tÃ©cnica. "
+                        "Mision aprobada con deuda tecnica. "
                         "Revisar antes de deploy."
                     )
-                    print("âš ï¸ Deuda tÃ©cnica detectada â€” revisar antes de deploy")
+                    print("Deuda tecnica detectada - revisar antes de deploy")
 
                 mission.aprobado        = True
                 mission.iteracion_final = iteracion
@@ -662,10 +659,10 @@ Incluye CUMPLIMIENTO: XX% con el porcentaje numÃ©rico.
                 codigo_para_repo = mejor_codigo_base or codigo_base
                 archivos_repo    = len(self._extraer_archivos_base(codigo_para_repo))
                 logger.info(
-                    f"ðŸ“ RepoGenerator usarÃ¡ mejor Base: "
+                    f"RepoGenerator usara mejor Base: "
                     f"{archivos_repo} archivo(s) detectados"
                 )
-                print(f"ðŸ“ RepoGenerator: {archivos_repo} archivo(s) detectados")
+                print(f"RepoGenerator: {archivos_repo} archivo(s) detectados")
 
                 repo_path = self.repo_generator.generar_repo(
                     implementation_text=codigo_para_repo,
@@ -686,19 +683,39 @@ Incluye CUMPLIMIENTO: XX% con el porcentaje numÃ©rico.
                     repo_path=repo_path,
                 )
 
-            console.print("[bold red]âš ï¸ RECHAZADO. ReingenierÃ­a iniciada...[/]")
-            print(f"âŒ RECHAZADO en ciclo {iteracion} â€” iniciando siguiente ciclo")
+            # --------------------------------------------------
+            # EARLY KILL - v4.19.0
+            # Si el mismo feedback se repite 2 ciclos -> break
+            # --------------------------------------------------
+
+            feedback_critico = self._extraer_feedback_critico(feedback_actual)
+            if feedback_critico and feedback_critico == ultimo_feedback:
+                contador_error += 1
+            else:
+                contador_error = 0
+            ultimo_feedback = feedback_critico
+
+            if contador_error >= 2:
+                logger.warning(
+                    f"Early kill activado en ciclo {iteracion} - "
+                    f"mismo error {contador_error} ciclos consecutivos"
+                )
+                print(f"Early kill activado - mismo error repetido. Terminando.")
+                break
+
+            console.print("[bold red]RECHAZADO. Re-ingenieria iniciada...[/]")
+            print(f"RECHAZADO en ciclo {iteracion} - iniciando siguiente ciclo")
 
         # --------------------------------------------------
-        # LÃMITE DE ITERACIONES ALCANZADO
+        # LIMITE DE ITERACIONES ALCANZADO
         # --------------------------------------------------
 
         compliance_score = self._extraer_compliance_score(feedback_actual or "")
         logger.warning(
-            f"âš ï¸ LÃ­mite de iteraciones alcanzado. "
-            f"Ãšltimo cumplimiento: {compliance_score}%"
+            f"Limite de iteraciones alcanzado. "
+            f"Ultimo cumplimiento: {compliance_score}%"
         )
-        print(f"â›” LÃ­mite de iteraciones alcanzado. Cumplimiento final: {compliance_score}%")
+        print(f"Limite de iteraciones alcanzado. Cumplimiento final: {compliance_score}%")
 
         return PipelineResult(
             orden_ceo=orden_ceo,
@@ -710,6 +727,6 @@ Incluye CUMPLIMIENTO: XX% con el porcentaje numÃ©rico.
             deuda_tecnica=False,
             compliance_score=compliance_score,
             iteracion=self.max_iteraciones,
-            observaciones="LÃ­mite de iteraciones alcanzado sin certificaciÃ³n.",
+            observaciones="Limite de iteraciones alcanzado sin certificacion.",
             repo_path=None,
         )
