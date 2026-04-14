@@ -80,7 +80,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
       return;
     }
 
-    setNodes([]);
+    setNodes(prev => prev.length === 0 ? [] : prev);
     setInternalDone(false);
     setLoading(true);
 
@@ -113,6 +113,13 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     };
 
     doFetch();
+
+    setTimeout(() => {
+      getSubmissions(missionId).then(data => {
+        const subs = data.submissions ?? data.submisiones ?? [];
+        renderSubs(subs);
+      }).catch(() => {});
+    }, 500);
 
     pollRef.current = setInterval(() => {
       if (stopped) { clearInterval(pollRef.current); return; }
