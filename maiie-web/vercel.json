@@ -1,3 +1,9 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://maiie-system-247946064488.us-central1.run.app/$1"
+    }
+  ]
 }

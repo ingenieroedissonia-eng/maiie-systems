@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { getGraph, getSubmissionDetail } from '../services/apiService';
 
 const W = 200; const H = 70;
@@ -16,8 +16,6 @@ const buildLayout = (submissions, dCols) => submissions.map((sub, i) => {
   return {
     id: sub.id, file, descripcion: sub.descripcion,
     status: sub.status || 'pending',
-    feedback: sub.feedback || null,
-    codigo: sub.codigo || null,
     x: (i % dCols) * COL_GAP + PAD_X,
     y: Math.floor(i / dCols) * ROW_GAP + PAD_Y,
     col: i % dCols, row: Math.floor(i / dCols)
@@ -42,15 +40,20 @@ const nodeLabel = (s) => {
   return '';
 };
 
-const buildEdges = (nodes, dCols) => {
+const buildEdges = (nodes) => {
   const edges = [];
+  const rowsMap = {};
+  nodes.forEach(n => {
+    if (!rowsMap[n.row]) rowsMap[n.row] = [];
+    rowsMap[n.row].push(n);
+  });
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i]; const b = nodes[i + 1];
     if (a.row === b.row) {
       edges.push({ x1: a.x+W, y1: cy(a), x2: b.x, y2: cy(b), key: a.id+'-'+b.id, bent: false });
     } else {
-      const last = nodes.filter(n => n.row === a.row).slice(-1)[0];
-      if (last.id === a.id) {
+      const last = rowsMap[a.row]?.slice(-1)[0];
+      if (last && last.id === a.id) {
         const rx = a.x + W + 20;
         edges.push({ x1: a.x+W, y1: cy(a), x2: rx, y2: cy(a), x3: rx, y3: cy(b), x4: b.x, y4: cy(b), key: a.id+'-'+b.id, bent: true });
       }
@@ -64,13 +67,23 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
   const [loading, setLoading] = useState(false);
   const [internalDone, setInternalDone] = useState(false);
   const pollRef = useRef(null);
+  const requestIdRef = useRef(0);
 
   const done = internalDone;
+  const edges = useMemo(() => buildEdges(nodes), [nodes]);
 
-  const renderSubs = (subs) => {
-    const dc = Math.max(4, Math.ceil((subs.length || 1) / 2));
-    setNodes(buildLayout(subs, dc));
-    setLoading(false);
+  const renderSubs = (subs, isFinal = false) => {
+    const safeSubs = Array.isArray(subs) ? subs : [];
+    const dc = Math.max(4, Math.ceil((safeSubs.length || 1) / 2));
+    const next = buildLayout(safeSubs, dc);
+    setNodes(prev => {
+      if (prev.length !== next.length) return next;
+      for (let i = 0; i < prev.length; i++) {
+        if (prev[i].id !== next[i].id || prev[i].status !== next[i].status) return next;
+      }
+      return prev;
+    });
+    if (safeSubs.length > 0 || isFinal) setLoading(false);
   };
 
   useEffect(() => {
@@ -79,7 +92,6 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
       setInternalDone(false);
       return;
     }
-
 
     setInternalDone(false);
     setLoading(true);
@@ -90,43 +102,24 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     const doFetch = () => {
       getGraph(missionId).then(data => {
         if (stopped) return;
-        const subs = data.submissions ?? data.submisiones ?? [];
-
-        if (data.codigo_generado && onCodigoGenerado) onCodigoGenerado(data.codigo_generado);
-
-        const dc2 = Math.max(4, Math.ceil((subs.length || 1) / 2));
-        const next = buildLayout(subs, dc2);
-        setNodes(prev => {
-          if (prev.length !== next.length) return next;
-          for (let i = 0; i < prev.length; i++) {
-            if (prev[i].status !== next[i].status ||
-                prev[i].feedback !== next[i].feedback ||
-                prev[i].codigo !== next[i].codigo) {
-              return next;
-            }
-          }
-          return prev;
-        });
-        setLoading(false);
-
+        const subs = Array.isArray(data.submissions) ? data.submissions : [];
         const isDone = data.status === 'done' || data.status === 'completed' || data.status === 'error';
+
+        renderSubs(subs, isDone);
 
         if (isDone) {
           setInternalDone(true);
           stopped = true;
           if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
-          setLoading(false);
-
           getGraph(missionId).then(finalData => {
-            const finalSubs = finalData.submissions ?? finalData.submisiones ?? [];
-            renderSubs(finalSubs);
+            const finalSubs = Array.isArray(finalData.submissions) ? finalData.submissions : [];
+            renderSubs(finalSubs, true);
           }).catch(() => {});
         }
       }).catch(() => setLoading(false));
     };
 
     doFetch();
-
 
     pollRef.current = setInterval(() => {
       if (stopped) { clearInterval(pollRef.current); return; }
@@ -160,7 +153,6 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
   const totalRows = nodes.length > 0 ? Math.ceil(nodes.length / dynamicCols) : 1;
   const canvasW = Math.max(1200, dynamicCols * COL_GAP + PAD_X * 2);
   const canvasH = Math.max(400, totalRows * ROW_GAP + PAD_Y * 2 + H);
-  const edges = buildEdges(nodes, dynamicCols);
 
   return (
     <div className="graph-area">
@@ -172,10 +164,10 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
       </div>
       <div className="graph-canvas">
         <div className="graph-viewport">
-          {nodes.length === 0 && !loading && (
+          {nodes.length === 0 && (
             <div className="graph-empty">
               <div className="ei">[ ]</div>
-              <p>Iniciando pipeline...</p>
+              <p>{loading ? 'Inicializando pipeline...' : done ? 'Mision completada.' : 'Esperando submisiones...'}</p>
             </div>
           )}
           {nodes.length > 0 && (
@@ -206,11 +198,14 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
                     className={"graph-node "+s+(isSel?" sel":"")}
                     style={{left:node.x+"px",top:node.y+"px",width:W+"px",position:"absolute"}}
                     onClick={async () => {
+                      const reqId = ++requestIdRef.current;
                       onSelectNode({...node, status: s, feedback: null, codigo: null, loading: true});
                       try {
                         const detail = await getSubmissionDetail(missionId, node.id);
+                        if (reqId !== requestIdRef.current) return;
                         onSelectNode({...node, status: s, feedback: detail.feedback ?? null, codigo: detail.codigo ?? null, loading: false});
                       } catch(e) {
+                        if (reqId !== requestIdRef.current) return;
                         onSelectNode({...node, status: s, feedback: null, codigo: null, loading: false});
                       }
                     }}
