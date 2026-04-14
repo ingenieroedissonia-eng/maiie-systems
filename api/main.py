@@ -166,7 +166,7 @@ def ejecutar_mision(request: MissionRequest):
                         return
                     subs = estado_actual.get("submissions", [])
                     for s in subs:
-                        if str(s.get("id")) == str(sub_id):
+                        if s.get("id") == sub_id:
                             s["status"] = status
                             s["codigo"] = codigo
                             if feedback is not None:
