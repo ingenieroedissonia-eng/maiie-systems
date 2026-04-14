@@ -36,6 +36,7 @@ logging.basicConfig(
     format="%(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("MAIIE.Main")
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse

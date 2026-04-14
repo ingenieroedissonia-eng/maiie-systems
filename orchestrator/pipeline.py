@@ -261,6 +261,13 @@ class IterativePipeline:
         if re.search(r'\bTODO\b', codigo_ejecutable, re.IGNORECASE):
             return False, "TODOs detectados en codigo ejecutable"
 
+        # Validacion funcional minima - v4.19.0
+        if "router =" in codigo or "APIRouter" in codigo:
+            if "@router." not in codigo:
+                return False, "Router definido pero sin endpoints"
+            if "def " not in codigo:
+                return False, "Sin funciones definidas"
+
         return True, "Validacion basica OK"
 
     # --------------------------------------------------------------
