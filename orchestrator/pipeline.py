@@ -439,11 +439,18 @@ Corrige el plan segun el feedback recibido.
             # --------------------------------------------------
 
             print(f"ENGINEER_BASE ejecutando...")
+            constraint_feedback = ""
+            if iteracion > 1 and feedback_actual:
+                feedback_critico = self._extraer_feedback_critico(feedback_actual)
+                if feedback_critico:
+                    constraint_feedback = f"\nRESTRICCIONES OBLIGATORIAS DEL CICLO ANTERIOR:\n{feedback_critico}\nSI INCUMPLES ALGUNA -> RESPUESTA INVALIDA\n"
+
             prompt_base = (
                 f"ORDEN ESPECIFICA A IMPLEMENTAR:\n"
                 f"{orden_ceo}\n\n"
                 f"PLAN ARQUITECTONICO (referencia de diseno):\n"
                 f"{plan_actual}\n\n"
+                f"{constraint_feedback}"
                 f"REGLA CRITICA: Implementa UNICAMENTE lo que describe la ORDEN ESPECIFICA.\n"
                 f"El plan arquitectonico es contexto de diseno - no lo implementes completo.\n"
                 f"Si la orden dice 'Crea api/user_router.py', genera SOLO ese archivo."
