@@ -129,7 +129,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
               return (
                 <div key={node.id} className={"graph-node "+s+(isSel?" sel":"")}
                   style={{left:node.x+"px",top:node.y+"px",width:W+"px",position:"absolute"}}
-                  onClick={() => onSelectNode({...node, status: s})}>
+                  onClick={() => onSelectNode({...node, status: s, feedback: node.feedback ?? null, codigo: node.codigo ?? null})}>
                   <div className="node-title" style={{fontSize:"0.72rem",lineHeight:"1.3",wordBreak:"break-word"}}>sub_{node.id}: {node.file}</div>
                   {lbl && <div className={"node-sub "+s}>{lbl}</div>}
                 </div>

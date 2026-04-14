@@ -199,7 +199,7 @@ def ejecutar_mision(request: MissionRequest):
                 "codigo_generado": resultado.codigo_final if resultado and hasattr(resultado, "codigo_final") else None
             })
 
-            if resultado and resultado.aprobado:
+            if resultado and resultado.aprobado and not resultado.deuda_tecnica:
                 try:
                     from utils.github_publisher import GitHubPublisher
                     publisher = GitHubPublisher()
@@ -224,7 +224,8 @@ def obtener_submissions(mission_id: str):
     data = _gcs_obtener(mission_id)
     if not data:
         raise HTTPException(status_code=404, detail="Mission no encontrada")
-    return {"mission_id": mission_id, "submisiones": data.get("submissions", []), "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
+    subs = data.get("submissions", [])
+    return {"mission_id": mission_id, "submisiones": subs[-10:], "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
 
 @app.get("/mission/{mission_id}/status", response_model=MissionStatusResponse)
 def estado_mision(mission_id: str):
