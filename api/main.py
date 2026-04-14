@@ -193,7 +193,7 @@ def ejecutar_mision(request: MissionRequest):
                 "logs": [],
                 "submissions": [
                     dict(s, status="done",
-                         feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) and resultados[i].aprobado else None,
+                         feedback=resultados[i].reporte_auditoria if USAR_PLANNER and i < len(resultados) else None,
                          codigo=resultados[i].codigo_final if USAR_PLANNER and i < len(resultados) else None)
                     for i, s in enumerate(submisiones)
                 ],
@@ -226,7 +226,7 @@ def obtener_submissions(mission_id: str):
     if not data:
         raise HTTPException(status_code=404, detail="Mission no encontrada")
     subs = data.get("submissions", [])
-    return {"mission_id": mission_id, "submisiones": subs[-10:], "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
+    return {"mission_id": mission_id, "submissions": subs[-10:], "status": data.get("status"), "codigo_generado": data.get("codigo_generado")}
 
 @app.get("/mission/{mission_id}/status", response_model=MissionStatusResponse)
 def estado_mision(mission_id: str):
