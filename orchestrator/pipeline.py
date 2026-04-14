@@ -227,6 +227,12 @@ class IterativePipeline:
         if len(codigo.strip()) < 100:
             return False, "Codigo insuficiente"
 
+        import ast
+        try:
+            ast.parse(codigo)
+        except SyntaxError as e:
+            return False, f"Syntax error: {str(e)}"
+
 
 
 
