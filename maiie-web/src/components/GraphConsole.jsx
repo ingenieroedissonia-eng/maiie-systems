@@ -46,7 +46,7 @@ const buildEdges = (nodes, dCols) => {
   const edges = [];
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i]; const b = nodes[i + 1];
-    if (Math.abs(a.y - b.y) < 10) {
+    if (a.row === b.row) {
       edges.push({ x1: a.x+W, y1: cy(a), x2: b.x, y2: cy(b), key: a.id+'-'+b.id, bent: false });
     } else {
       const last = nodes.filter(n => n.row === a.row).slice(-1)[0];
