@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getSubmissions } from '../services/apiService';
+import { getGraph, getSubmissionDetail } from '../services/apiService';
 
 const W = 200; const H = 70;
 const COL_GAP = 260; const ROW_GAP = 160;
@@ -88,7 +88,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     let stopped = false;
 
     const doFetch = () => {
-      getSubmissions(missionId).then(data => {
+      getGraph(missionId).then(data => {
         if (stopped) return;
         const subs = data.submissions ?? data.submisiones ?? [];
 
@@ -117,7 +117,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
           if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
           setLoading(false);
 
-          getSubmissions(missionId).then(finalData => {
+          getGraph(missionId).then(finalData => {
             const finalSubs = finalData.submissions ?? finalData.submisiones ?? [];
             renderSubs(finalSubs);
           }).catch(() => {});
@@ -128,7 +128,7 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
     doFetch();
 
     setTimeout(() => {
-      getSubmissions(missionId).then(data => {
+      getGraph(missionId).then(data => {
         const subs = data.submissions ?? data.submisiones ?? [];
         renderSubs(subs);
       }).catch(() => {});
@@ -211,7 +211,15 @@ const GraphConsole = ({ missionStatus, missionId, selectedNode, onSelectNode, on
                   <div key={node.id}
                     className={"graph-node "+s+(isSel?" sel":"")}
                     style={{left:node.x+"px",top:node.y+"px",width:W+"px",position:"absolute"}}
-                    onClick={() => onSelectNode({...node, status: s, feedback: node.feedback ?? null, codigo: node.codigo ?? null})}
+                    onClick={async () => {
+                      onSelectNode({...node, status: s, feedback: null, codigo: null, loading: true});
+                      try {
+                        const detail = await getSubmissionDetail(missionId, node.id);
+                        onSelectNode({...node, status: s, feedback: detail.feedback ?? null, codigo: detail.codigo ?? null, loading: false});
+                      } catch(e) {
+                        onSelectNode({...node, status: s, feedback: null, codigo: null, loading: false});
+                      }
+                    }}
                   >
                     <div className="node-title" style={{fontSize:"0.72rem",lineHeight:"1.3",wordBreak:"break-word"}}>
                       sub_{node.id}: {node.file}

@@ -94,9 +94,11 @@ const NodeDetailPanel = ({ selectedNode, missionStatus, codigoGenerado }) => {
 
           <div>
 
-            {selectedNode?.feedback
-              ? <div className="fb-item apr" style={{whiteSpace:'pre-wrap',fontSize:'0.68rem',lineHeight:'1.6'}}>{selectedNode.feedback}</div>
-              : <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>{s === 'pending' || s === 'idle' ? 'Sin feedback aun.' : s === 'running' ? 'En proceso -- pendiente de revision.' : 'Feedback no disponible.'}</div>
+            {selectedNode?.loading
+              ? <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>Cargando detalle...</div>
+              : selectedNode?.feedback
+                ? <div className="fb-item apr" style={{whiteSpace:'pre-wrap',fontSize:'0.68rem',lineHeight:'1.6'}}>{selectedNode.feedback}</div>
+                : <div style={{color:'var(--text-dim)',fontSize:'0.76rem'}}>{s === 'pending' || s === 'idle' ? 'Sin feedback aun.' : s === 'running' ? 'En proceso -- pendiente de revision.' : 'Feedback no disponible.'}</div>
             }
 
           </div>

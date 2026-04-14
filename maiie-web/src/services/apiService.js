@@ -90,3 +90,34 @@ export const getMetrics = async () => {
     throw new NetworkError('Network request failed.');
   }
 };
+export const getGraph = async (missionId) => {
+  try {
+    const response = await fetch(`/api/mission/${missionId}/graph`, {
+      headers: { 'x-app-token': APP_TOKEN },
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error' }));
+      throw new ApiError(errorData.message || 'API Error: ' + response.statusText, response.status);
+    }
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new NetworkError('Network request failed.');
+  }
+};
+
+export const getSubmissionDetail = async (missionId, subId) => {
+  try {
+    const response = await fetch(`/api/mission/${missionId}/submission/${subId}`, {
+      headers: { 'x-app-token': APP_TOKEN },
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error' }));
+      throw new ApiError(errorData.message || 'API Error: ' + response.statusText, response.status);
+    }
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new NetworkError('Network request failed.');
+  }
+};
