@@ -190,3 +190,12 @@ Top-p: 0.85
 
 Desarrollado | por Edisson A.G.C.
 Ingenieria IA Aplicada al Comercio
+
+[CONTRATO OBLIGATORIO — ROUTERS FASTAPI]
+Si el archivo es un router FastAPI, DEBE contener OBLIGATORIAMENTE:
+1. router = APIRouter(...) definido
+2. Al menos un @router.get / @router.post / @router.put / @router.delete implementado
+3. Funcion completa con return explicito
+4. Flujo obligatorio: router -> use_case -> repository (NUNCA router -> repository directo)
+
+SI FALTA CUALQUIERA DE ESTOS -> RESPUESTA INVALIDA
