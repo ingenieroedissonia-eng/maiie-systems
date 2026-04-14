@@ -338,6 +338,41 @@ def publicar_sistema(request: PublishSistemaRequest):
 
 
 
+
+
+@app.get('/mission/{mission_id}/graph')
+def obtener_graph(mission_id: str):
+    data = _gcs_obtener(mission_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Mission no encontrada")
+    subs = data.get("submissions", [])
+    return {
+        "mission_id": mission_id,
+        "status": data.get("status"),
+        "submissions": [
+            {
+                "id": s["id"],
+                "descripcion": s.get("descripcion"),
+                "status": s.get("status")
+            }
+            for s in subs
+        ]
+    }
+
+@app.get('/mission/{mission_id}/submission/{sub_id}')
+def obtener_submission_detail(mission_id: str, sub_id: int):
+    data = _gcs_obtener(mission_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Mission no encontrada")
+    subs = data.get("submissions", [])
+    for s in subs:
+        if s.get("id") == sub_id:
+            return {
+                "id": s["id"],
+                "feedback": s.get("feedback"),
+                "codigo": s.get("codigo")
+            }
+    raise HTTPException(status_code=404, detail="Submision no encontrada")
 @app.get('/missions')
 def listar_misiones():
     from core.missions_store_gcs import listar as _gcs_listar
