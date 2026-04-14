@@ -87,6 +87,7 @@ class PlannerExecutor:
 
         resultados        = []
         contexto_compacto = ""
+        contexto_bloques   = []  # v1.5.0: lista para limitar a ultimas 3
         ids_resueltos: set = set()
         plan_completo = self._construir_plan_completo(submisiones)
         estado_proyecto = ProjectStateManager()
@@ -119,6 +120,7 @@ class PlannerExecutor:
                     f"CRITICO: Usa EXACTAMENTE las mismas rutas de importacion mostradas arriba.\n"
                     f"NO inventes rutas nuevas. Si ves 'from core.interfaces import X', usa esa ruta exacta.\n"
                     f"Implementa SOLO lo que describe esta submision.\n"
+                    f"REGLA DE MAXIMA PRIORIDAD: La descripcion de esta submision es la orden real. IGNORA contexto anterior si contradice la orden actual.\n"
                 )
             else:
                 orden_enriquecida = (
@@ -149,10 +151,11 @@ class PlannerExecutor:
             if resultado and resultado.codigo_final:
                 estado_proyecto.registrar(sub["descripcion"], resultado.codigo_final)
                 firmas = self._extraer_firmas(resultado.codigo_final, sub["descripcion"])
-                contexto_compacto += (
+                contexto_bloques.append(
                     f"\n# === [{sub['id']}] {sub['descripcion']} ===\n"
                     f"{firmas}\n"
                 )
+                contexto_compacto = "".join(contexto_bloques[-3:])
                 logger.info(f"Contexto acumulado hasta submision {sub['id']}")
             else:
                 logger.warning(f"Submision {sub['id']} no genero codigo_final")
