@@ -166,7 +166,7 @@ def ejecutar_mision(request: MissionRequest):
                         return
                     subs = estado_actual.get("submissions", [])
                     for s in subs:
-                        if s.get("id") == sub_id:
+                        if str(s.get("id")) == str(sub_id):
                             s["status"] = status
                             s["codigo"] = codigo
                             if feedback is not None:
@@ -351,7 +351,7 @@ def obtener_graph(mission_id: str):
         "status": data.get("status"),
         "submissions": [
             {
-                "id": s["id"],
+                "id": s.get("id"),
                 "descripcion": s.get("descripcion"),
                 "status": s.get("status")
             }
@@ -360,15 +360,15 @@ def obtener_graph(mission_id: str):
     }
 
 @app.get('/mission/{mission_id}/submission/{sub_id}')
-def obtener_submission_detail(mission_id: str, sub_id: int):
+def obtener_submission_detail(mission_id: str, sub_id: str):
     data = _gcs_obtener(mission_id)
     if not data:
         raise HTTPException(status_code=404, detail="Mission no encontrada")
     subs = data.get("submissions", [])
     for s in subs:
-        if s.get("id") == sub_id:
+        if str(s.get("id")) == str(sub_id):
             return {
-                "id": s["id"],
+                "id": s.get("id"),
                 "feedback": s.get("feedback"),
                 "codigo": s.get("codigo")
             }
