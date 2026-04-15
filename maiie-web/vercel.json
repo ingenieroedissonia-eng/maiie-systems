@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://maiie-system-247946064488.us-central1.run.app/$1"
+      "destination": "https://maiie-system-00005-whb-247946064488.us-central1.run.app/$1"
     }
   ]
 }
