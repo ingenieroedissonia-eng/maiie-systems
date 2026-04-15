@@ -9,9 +9,9 @@ function App() {
   const [missionId, setMissionId] = useState(null);
   const [missionStatus, setMissionStatus] = useState(null);
   const [executionState, setExecutionState] = useState({
-  isActive: false,
-  status: null
-});
+    isActive: false,
+    status: null
+  });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -21,7 +21,8 @@ function App() {
   const [mDesc, setMDesc] = useState('');
   const [activeView, setActiveView] = useState('panel');
   const [systemStats, setSystemStats] = useState(null);
-  const [allMissions, setAllMissions] = useState(null);
+  
+  const [allMissions, setAllMissions] = useState([]);
   const statusRef = useRef(null);
 
   useEffect(() => {
@@ -29,8 +30,12 @@ function App() {
     Promise.all([getMissions(), getMetrics()])
       .then(([missionsData, metricsData]) => {
         if (!cancelled) {
-          const missions = missionsData.missions || [];
+          const missions = Array.isArray(missionsData?.missions)
+            ? missionsData.missions
+            : [];
+            
           const le = metricsData.learning_engine || {};
+          
           setSystemStats({
             total: missions.length,
             alpha: le.alpha ?? '0.6',
@@ -39,10 +44,14 @@ function App() {
             calibrado: le.calibrado ?? false,
             misiones_procesadas: le.misiones_procesadas ?? 0,
           });
-          setAllMissions(missions);
+          
+          setAllMissions([...missions]);
         }
       })
-      .catch(() => { if (!cancelled) setSystemStats({ total: '?' }); });
+      .catch((err) => { 
+        console.error("Error cargando datos:", err);
+        if (!cancelled) setSystemStats({ total: '?' }); 
+      });
     return () => { cancelled = true; };
   }, []);
 
@@ -57,9 +66,9 @@ function App() {
         setMissionId(res.mission_id);
         setMissionStatus(res);
         setExecutionState({
-  isActive: true,
-  status: 'running'
-});
+          isActive: true,
+          status: 'running'
+        });
         statusRef.current = res;
         setMName(''); setMDesc('');
       } else throw new Error('Respuesta invalida del servidor.');
@@ -76,12 +85,12 @@ function App() {
         const s = await getMissionStatus(missionId);
         statusRef.current = s; setMissionStatus(s);
         if (s?.status === 'done' || s?.status === 'error') {
-  setExecutionState({
-    isActive: false,
-    status: s.status
-  });
-  clearInterval(id);
-}
+          setExecutionState({
+            isActive: false,
+            status: s.status
+          });
+          clearInterval(id);
+        }
       } catch (e) { setError(e.message); clearInterval(id); }
     }, 3000);
     return () => clearInterval(id);
@@ -176,10 +185,14 @@ function App() {
 
 function HistorialView({ missions: propMissions }) {
   const [missions, setMissions] = useState(propMissions || []);
-  const [loading, setLoading] = useState(!propMissions);
+  const [loading, setLoading] = useState(propMissions === undefined);
 
   useEffect(() => {
-    if (propMissions) { setMissions(propMissions); setLoading(false); return; }
+    if (Array.isArray(propMissions)) { 
+      setMissions(propMissions); 
+      setLoading(false); 
+      return; 
+    }
     getMissions()
       .then(data => setMissions(data.missions || []))
       .catch(() => setMissions([]))
@@ -213,7 +226,7 @@ function ConfigView() {
     <div style={{display:'flex',flexDirection:'column',gap:'12px',maxWidth:'520px'}}>
       {[
         ['Pipeline Version', 'v4.19.0'],
-        ['Cloud Run Revision', 'maiie-system-00011-pr4'],
+        ['Cloud Run Revision', 'maiie-system-00005-whb'], // FIX APLICADO AQUÍ
         ['ARCHITECT', 'google/gemini-2.5-flash-lite'],
         ['ENGINEER_BASE', 'google/gemini-2.5-pro'],
         ['AUDITOR', 'google/gemini-2.5-pro'],
